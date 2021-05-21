@@ -3,8 +3,8 @@ import './App.css'
 import '../../shared/styles.scss'
 import { ConvoPreview } from '../ConvoPreview'
 import { ConvoPreviewListToolbar } from '../ConvoPreviewListToolbar'
-import { conversations, john } from '../../shared/api-responses/conversations'
-import { LoggedInPersonContext } from '../../shared/utils/context'
+import { conversations, john } from '../__shared__/api-responses/conversations'
+import { LoggedInPersonContext } from '../__shared__/utils/context'
 import { ConvoView } from '../ConvoView'
 
 function App () {

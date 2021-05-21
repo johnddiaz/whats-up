@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'react'
 
 function Avatar () {
     return (
@@ -16,7 +16,7 @@ function Avatar () {
         >
             ?
         </div>
-    );
+    )
 }
 
-export default Avatar;
+export default Avatar
