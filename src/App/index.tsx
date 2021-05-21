@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import './App.css'
-import '../../shared/styles.scss'
+import './styles.css'
+import '../__shared__/styles.scss'
 import { ConvoPreview } from '../ConvoPreview'
 import { ConvoPreviewListToolbar } from '../ConvoPreviewListToolbar'
 import { conversations, john } from '../__shared__/api-responses/conversations'
