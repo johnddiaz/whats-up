@@ -1,6 +1,9 @@
 import * as React from 'react'
-import { Conversation, Message } from '../../shared/api-responses/conversations'
-import { LoggedInPersonContext } from '../../shared/utils/context'
+import {
+    Conversation,
+    Message,
+} from '../__shared__/api-responses/conversations'
+import { LoggedInPersonContext } from '../__shared__/utils/context'
 import { ConvoMessageList } from '../ConvoMessageList'
 
 interface Props {

@@ -1,5 +1,8 @@
 import * as React from 'react'
-import { Conversation, Message } from '../../shared/api-responses/conversations'
+import {
+    Conversation,
+    Message,
+} from '../__shared__/api-responses/conversations'
 import { ConvoMessage } from '../ConvoMessage'
 
 interface Props {

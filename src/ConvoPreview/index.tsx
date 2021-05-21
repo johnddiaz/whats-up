@@ -2,7 +2,7 @@ import * as React from 'react'
 import './styles.scss'
 import '../../shared/styles.scss'
 import Avatar from '../Avatar'
-import { Conversation } from '../../shared/api-responses/conversations'
+import { Conversation } from '../__shared__/api-responses/conversations'
 
 interface Props {
     conversation: Conversation
