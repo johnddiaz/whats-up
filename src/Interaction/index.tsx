@@ -3,14 +3,14 @@ import {
     Conversation,
     Message,
 } from '../__shared__/api-responses/conversations'
-import { ConvoMessage } from '../ConvoMessage'
+import { InteractionMessage } from '../InteractionMessage'
 
 interface Props {
     conversation?: Conversation
     newMessages: Message[]
 }
 
-function ConvoMessageList (props: Props) {
+function Interaction(props: Props) {
     const newestMessageRef = React.useRef<HTMLDivElement | null>(null)
     const messages = [
         ...(props.conversation?.messages ? props.conversation.messages : []),
@@ -25,7 +25,7 @@ function ConvoMessageList (props: Props) {
 
     return (
         <div
-            id='convomessagelistid'
+            id="convomessagelistid"
             style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -34,7 +34,7 @@ function ConvoMessageList (props: Props) {
             }}
         >
             {messages.map((message, index) => (
-                <ConvoMessage
+                <InteractionMessage
                     key={message.id}
                     message={message}
                     newestMessageRef={
@@ -48,4 +48,4 @@ function ConvoMessageList (props: Props) {
     )
 }
 
-export { ConvoMessageList }
+export { Interaction }

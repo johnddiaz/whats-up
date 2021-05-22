@@ -10,7 +10,7 @@ interface Props {
     newestMessageRef: React.MutableRefObject<HTMLDivElement | null> | undefined
 }
 
-function ConvoMessage(props: Props) {
+function InteractionMessage(props: Props) {
     const loggedInPerson: Person = john
 
     const personSpecificStyles =
@@ -51,4 +51,4 @@ function ConvoMessage(props: Props) {
     )
 }
 
-export { ConvoMessage }
+export { InteractionMessage }

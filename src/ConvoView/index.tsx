@@ -4,7 +4,7 @@ import {
     Message,
     Person,
 } from '../__shared__/api-responses/conversations'
-import { ConvoMessageList } from '../ConvoMessageList'
+import { Interaction } from '../Interaction'
 import ConvoMessageEditor from '../ConvoMessageEditor'
 
 interface Props {
@@ -56,7 +56,7 @@ function ConvoView(props: Props) {
 
     return (
         <>
-            <ConvoMessageList
+            <Interaction
                 conversation={props.conversation}
                 newMessages={newMessages}
             />
