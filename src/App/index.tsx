@@ -27,7 +27,21 @@ function ConvosLayout(props: { children: React.ReactNode }) {
 }
 
 function ConvoInteractionLayout(props: { children: JSX.Element }) {
-    return props.children
+    return (
+        <div
+            id="convoviewdiv"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                backgroundColor: 'grey',
+                flexGrow: 3,
+                flexBasis: 0,
+            }}
+        >
+            {props.children}
+        </div>
+    )
 }
 
 function App() {
