@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import './styles.css'
 import '../__shared__/styles.scss'
-import { ConvoPreview } from '../ConvoPreview'
-import { ConvoPreviewListToolbar } from '../ConvoPreviewListToolbar'
+import { ChatPreview } from '../ChatPreview'
+import { ChatsToolbar } from '../ChatsToolbar'
 import {
     Conversation,
     conversations,
@@ -10,7 +10,7 @@ import {
     Message,
 } from '../__shared__/api-responses/conversations'
 import { Interaction } from '../Interaction'
-import ConvoMessageEditor from '../ConvoMessageEditor'
+import InteractionMessageEditor from '../InteractionMessageEditor'
 
 function ChatsLayout(props: { children: React.ReactNode }) {
     return (
@@ -108,9 +108,9 @@ function App() {
             }}
         >
             <ChatsLayout>
-                <ConvoPreviewListToolbar />
+                <ChatsToolbar />
                 {conversations.map((convo) => (
-                    <ConvoPreview
+                    <ChatPreview
                         key={convo.id}
                         conversation={convo}
                         onPreviewClick={handlePreviewSelect}
@@ -122,7 +122,7 @@ function App() {
                     conversation={currentConvo}
                     newMessages={newMessages}
                 />
-                <ConvoMessageEditor
+                <InteractionMessageEditor
                     currentDraft={currentDraft}
                     handleMessageChange={handleMessageChange}
                     handleSend={handleSend}

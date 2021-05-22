@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-function ConvoPreviewListToolbar () {
+function ChatsToolbar() {
     return (
         <div
             style={{
@@ -8,10 +8,10 @@ function ConvoPreviewListToolbar () {
                 justifyContent: 'space-around',
             }}
         >
-            <input type='search' placeholder='Search' />
-            <input type='button' value='New Message' />
+            <input type="search" placeholder="Search" />
+            <input type="button" value="New Message" />
         </div>
     )
 }
 
-export { ConvoPreviewListToolbar }
+export { ChatsToolbar }

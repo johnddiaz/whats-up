@@ -6,7 +6,7 @@ interface Props {
     handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>): void
 }
 
-function ConvoMessageEditor(props: Props) {
+function InteractionMessageEditor(props: Props) {
     return (
         <div
             id="convomessageeditor"
@@ -30,4 +30,4 @@ function ConvoMessageEditor(props: Props) {
     )
 }
 
-export default ConvoMessageEditor
+export default InteractionMessageEditor

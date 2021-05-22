@@ -9,14 +9,14 @@ interface Props {
     onPreviewClick: (id: number) => void
 }
 
-function ConvoPreview (props: Props) {
-    function onPreviewClick () {
+function ChatPreview(props: Props) {
+    function onPreviewClick() {
         props.onPreviewClick(props.conversation.id)
     }
 
     return (
         <div
-            id='chat-thread'
+            id="chat-thread"
             style={{
                 border: '1px solid black',
                 display: 'flex',
@@ -25,12 +25,12 @@ function ConvoPreview (props: Props) {
                 margin: '8px 16px',
                 cursor: 'pointer',
             }}
-            className='round-border'
+            className="round-border"
             onClick={onPreviewClick}
         >
             <Avatar />
             <div
-                id='textcontent'
+                id="textcontent"
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -44,4 +44,4 @@ function ConvoPreview (props: Props) {
     )
 }
 
-export { ConvoPreview }
+export { ChatPreview }
