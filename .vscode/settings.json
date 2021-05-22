@@ -1,4 +1,5 @@
 {
     "workbench.tree.indent": 24,
-    "editor.linkedEditing": true
+    "editor.linkedEditing": true,
+    "gitlens.advanced.fileHistoryFollowsRenames": true
 }

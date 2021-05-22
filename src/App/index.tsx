@@ -3,55 +3,71 @@ import './styles.css'
 import '../__shared__/styles.scss'
 import { ConvoPreview } from '../ConvoPreview'
 import { ConvoPreviewListToolbar } from '../ConvoPreviewListToolbar'
-import { conversations, john } from '../__shared__/api-responses/conversations'
-import { LoggedInPersonContext } from '../__shared__/utils/context'
+import {
+    Conversation,
+    conversations,
+    john,
+} from '../__shared__/api-responses/conversations'
 import { ConvoView } from '../ConvoView'
 
-function App () {
-    const [currentConvoId, setCurrentConvoId] = useState<number | undefined>()
+function ConvosLayout(props: { children: React.ReactNode }) {
+    return (
+        <div
+            id="chat thread list"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                flexGrow: 1,
+                flexBasis: 0,
+            }}
+        >
+            {props.children}
+        </div>
+    )
+}
 
-    function handlePreviewSelect (id: number) {
-        setCurrentConvoId(id)
+function ConvoInteractionLayout(props: { children: JSX.Element }) {
+    return props.children
+}
+
+function App() {
+    const [currentConvo, setCurrentConvo] = useState<Conversation | undefined>()
+    const loggedInPerson = john
+
+    function handlePreviewSelect(id: number) {
+        const convo = conversations.find((convo) => convo.id === id)
+        if (convo) {
+            setCurrentConvo(convo)
+        }
     }
 
     return (
-        <LoggedInPersonContext.Provider value={john}>
-            <div
-                id='parent'
-                style={{
-                    display: 'flex',
-                    height: '100%',
-                    padding: '32px',
-                    boxSizing: 'border-box',
-                }}
-            >
-                <div
-                    id='chat thread list'
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flexGrow: 1,
-                        flexBasis: 0,
-                    }}
-                >
-                    <ConvoPreviewListToolbar />
-                    {conversations.map(convo => {
-                        return (
-                            <ConvoPreview
-                                key={convo.id}
-                                conversation={convo}
-                                onPreviewClick={handlePreviewSelect}
-                            />
-                        )
-                    })}
-                </div>
+        <div
+            id="parent"
+            style={{
+                display: 'flex',
+                height: '100%',
+                padding: '32px',
+                boxSizing: 'border-box',
+            }}
+        >
+            <ConvosLayout>
+                <ConvoPreviewListToolbar />
+                {conversations.map((convo) => (
+                    <ConvoPreview
+                        key={convo.id}
+                        conversation={convo}
+                        onPreviewClick={handlePreviewSelect}
+                    />
+                ))}
+            </ConvosLayout>
+            <ConvoInteractionLayout>
                 <ConvoView
-                    conversation={conversations.find(
-                        convo => convo.id === currentConvoId
-                    )}
+                    loggedInPerson={loggedInPerson}
+                    conversation={currentConvo}
                 />
-            </div>
-        </LoggedInPersonContext.Provider>
+            </ConvoInteractionLayout>
+        </div>
     )
 }
 

@@ -2,24 +2,27 @@ import * as React from 'react'
 import {
     Conversation,
     Message,
+    Person,
 } from '../__shared__/api-responses/conversations'
-import { LoggedInPersonContext } from '../__shared__/utils/context'
 import { ConvoMessageList } from '../ConvoMessageList'
+import ConvoMessageEditor from '../ConvoMessageEditor'
 
 interface Props {
+    loggedInPerson: Person | undefined
+    children?: React.ReactNode
     conversation?: Conversation
 }
 
-function ConvoView (props: Props) {
-    const loggedInPerson = React.useContext(LoggedInPersonContext)
+function ConvoView(props: Props) {
     const [currentDraft, setCurrentDraft] = React.useState('')
     const [newMessages, setNewMessages] = React.useState<Message[]>([])
-    function handleMessageChange (e: React.ChangeEvent<HTMLTextAreaElement>) {
+
+    function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         e.preventDefault()
         setCurrentDraft(e.target.value)
     }
 
-    function makeNewMessageId (): number {
+    function makeNewMessageId(): number {
         let lastId: number
 
         if (newMessages.length === 0) {
@@ -32,28 +35,28 @@ function ConvoView (props: Props) {
         return lastId + 1
     }
 
-    function handleSend (e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
+    function handleSend(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
         e.preventDefault()
 
-        if (!loggedInPerson) {
+        if (!props.loggedInPerson) {
             console.error('not logged in')
             return
         }
 
         const message: Message = {
             id: makeNewMessageId(),
-            senderId: loggedInPerson?.id,
-            senderName: loggedInPerson?.name,
+            senderId: props.loggedInPerson?.id,
+            senderName: props.loggedInPerson?.name,
             text: currentDraft,
         }
 
-        setNewMessages(prev => [...prev, message])
+        setNewMessages((prev) => [...prev, message])
         setCurrentDraft('')
     }
 
     return (
         <div
-            id='convoviewdiv'
+            id="convoviewdiv"
             style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -67,25 +70,11 @@ function ConvoView (props: Props) {
                 conversation={props.conversation}
                 newMessages={newMessages}
             />
-            <div
-                id='convomessageeditor'
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    border: '1px solid black',
-                }}
-            >
-                <textarea
-                    style={
-                        {
-                            // borderRadius: '24px',
-                        }
-                    }
-                    onChange={handleMessageChange}
-                    value={currentDraft}
-                />
-                <input type='button' value='Send' onClick={handleSend} />
-            </div>
+            <ConvoMessageEditor
+                currentDraft={currentDraft}
+                handleMessageChange={handleMessageChange}
+                handleSend={handleSend}
+            />
         </div>
     )
 }
