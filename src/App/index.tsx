@@ -7,10 +7,12 @@ import {
     Conversation,
     conversations,
     john,
+    Message,
 } from '../__shared__/api-responses/conversations'
-import { ConvoView } from '../ConvoView'
+import { Interaction } from '../Interaction'
+import ConvoMessageEditor from '../ConvoMessageEditor'
 
-function ConvosLayout(props: { children: React.ReactNode }) {
+function ChatsLayout(props: { children: React.ReactNode }) {
     return (
         <div
             id="chat thread list"
@@ -26,7 +28,7 @@ function ConvosLayout(props: { children: React.ReactNode }) {
     )
 }
 
-function ConvoInteractionLayout(props: { children: JSX.Element }) {
+function InteractionLayout(props: { children: React.ReactNode }) {
     return (
         <div
             id="convoviewdiv"
@@ -48,11 +50,51 @@ function App() {
     const [currentConvo, setCurrentConvo] = useState<Conversation | undefined>()
     const loggedInPerson = john
 
+    const [currentDraft, setCurrentDraft] = React.useState('')
+    const [newMessages, setNewMessages] = React.useState<Message[]>([])
+
     function handlePreviewSelect(id: number) {
         const convo = conversations.find((convo) => convo.id === id)
         if (convo) {
             setCurrentConvo(convo)
         }
+    }
+
+    function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+        e.preventDefault()
+        setCurrentDraft(e.target.value)
+    }
+
+    function makeNewMessageId(): number {
+        let lastId: number
+
+        if (newMessages.length === 0) {
+            const messages = currentConvo?.messages
+            lastId = messages ? messages[messages.length - 1].id : 0
+        } else {
+            lastId = newMessages[newMessages.length - 1].id
+        }
+
+        return lastId + 1
+    }
+
+    function handleSend(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
+        e.preventDefault()
+
+        if (!loggedInPerson) {
+            console.error('not logged in')
+            return
+        }
+
+        const message: Message = {
+            id: makeNewMessageId(),
+            senderId: loggedInPerson?.id,
+            senderName: loggedInPerson?.name,
+            text: currentDraft,
+        }
+
+        setNewMessages((prev) => [...prev, message])
+        setCurrentDraft('')
     }
 
     return (
@@ -65,7 +107,7 @@ function App() {
                 boxSizing: 'border-box',
             }}
         >
-            <ConvosLayout>
+            <ChatsLayout>
                 <ConvoPreviewListToolbar />
                 {conversations.map((convo) => (
                     <ConvoPreview
@@ -74,13 +116,18 @@ function App() {
                         onPreviewClick={handlePreviewSelect}
                     />
                 ))}
-            </ConvosLayout>
-            <ConvoInteractionLayout>
-                <ConvoView
-                    loggedInPerson={loggedInPerson}
+            </ChatsLayout>
+            <InteractionLayout>
+                <Interaction
                     conversation={currentConvo}
+                    newMessages={newMessages}
                 />
-            </ConvoInteractionLayout>
+                <ConvoMessageEditor
+                    currentDraft={currentDraft}
+                    handleMessageChange={handleMessageChange}
+                    handleSend={handleSend}
+                />
+            </InteractionLayout>
         </div>
     )
 }
