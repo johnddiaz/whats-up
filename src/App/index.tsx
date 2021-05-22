@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './styles.css'
+import './styles.scss'
 import '../__shared__/styles.scss'
 import { ChatPreview } from '../ChatPreview'
 import { ChatsToolbar } from '../ChatsToolbar'
@@ -11,40 +11,7 @@ import {
 } from '../__shared__/api-responses/conversations'
 import { Interaction } from '../Interaction'
 import InteractionMessageEditor from '../InteractionMessageEditor'
-
-function ChatsLayout(props: { children: React.ReactNode }) {
-    return (
-        <div
-            id="chat thread list"
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                flexGrow: 1,
-                flexBasis: 0,
-            }}
-        >
-            {props.children}
-        </div>
-    )
-}
-
-function InteractionLayout(props: { children: React.ReactNode }) {
-    return (
-        <div
-            id="convoviewdiv"
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                backgroundColor: 'grey',
-                flexGrow: 3,
-                flexBasis: 0,
-            }}
-        >
-            {props.children}
-        </div>
-    )
-}
+import { ChatsLayout, InteractionLayout } from './layouts'
 
 function App() {
     const [currentConvo, setCurrentConvo] = useState<Conversation | undefined>()
@@ -99,7 +66,6 @@ function App() {
 
     return (
         <div
-            id="parent"
             style={{
                 display: 'flex',
                 height: '100%',
@@ -118,6 +84,7 @@ function App() {
                 ))}
             </ChatsLayout>
             <InteractionLayout>
+                {/* Header */}
                 <Interaction
                     conversation={currentConvo}
                     newMessages={newMessages}

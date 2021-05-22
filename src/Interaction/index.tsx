@@ -1,4 +1,5 @@
 import * as React from 'react'
+import './styles.scss'
 import {
     Conversation,
     Message,
@@ -24,15 +25,7 @@ function Interaction(props: Props) {
     }, [messages.length])
 
     return (
-        <div
-            id="convomessagelistid"
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'auto',
-                padding: '0px 16px 0px',
-            }}
-        >
+        <div id="interaction-root">
             {messages.map((message, index) => (
                 <InteractionMessage
                     key={message.id}

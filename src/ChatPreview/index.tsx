@@ -15,28 +15,9 @@ function ChatPreview(props: Props) {
     }
 
     return (
-        <div
-            id="chat-thread"
-            style={{
-                border: '1px solid black',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '16px',
-                margin: '8px 16px',
-                cursor: 'pointer',
-            }}
-            className="round-border"
-            onClick={onPreviewClick}
-        >
+        <div id="chatpreview-root" onClick={onPreviewClick}>
             <Avatar />
-            <div
-                id="textcontent"
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    paddingLeft: '8px',
-                }}
-            >
+            <div id="chatpreview-text-root">
                 <h5 style={{ margin: '0' }}>{props.conversation.name}</h5>
                 <p style={{ margin: '0' }}>{props.conversation.lastMessage}</p>
             </div>

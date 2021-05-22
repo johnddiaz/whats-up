@@ -1,4 +1,5 @@
 import * as React from 'react'
+import './styles.scss'
 import {
     john,
     Message,
@@ -13,40 +14,17 @@ interface Props {
 function InteractionMessage(props: Props) {
     const loggedInPerson: Person = john
 
-    const personSpecificStyles =
-        loggedInPerson?.id === props.message.senderId
-            ? {
-                  marginLeft: '32px',
-                  alignSelf: 'end',
-                  backgroundColor: 'black',
-                  color: 'white',
-              }
-            : {
-                  marginRight: '32px',
-                  alignSelf: 'start',
-                  backgroundColor: 'white',
-                  color: 'black',
-              }
     return (
         <div
+            id="interactionmessage-root"
+            className={
+                loggedInPerson?.id === props.message.senderId
+                    ? 'interactionmessage-self'
+                    : 'interactionmessage-friend'
+            }
             ref={props.newestMessageRef}
-            style={{
-                display: 'flex',
-                border: '1px solid black',
-                borderRadius: '24px',
-                padding: '8px',
-                marginBottom: '16px',
-                ...personSpecificStyles,
-            }}
         >
-            <p
-                style={{
-                    margin: 0,
-                    overflowWrap: 'anywhere',
-                }}
-            >
-                {props.message.text}
-            </p>
+            <p id="interactionmessage-text">{props.message.text}</p>
         </div>
     )
 }

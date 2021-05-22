@@ -1,22 +1,8 @@
 import * as React from 'react'
+import './styles.scss'
 
-function Avatar () {
-    return (
-        <div
-            style={{
-                height: '32px',
-                width: '32px',
-                borderRadius: '50%',
-                backgroundColor: 'black',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-            }}
-        >
-            ?
-        </div>
-    )
+function Avatar() {
+    return <div id="avatar-root">?</div>
 }
 
 export default Avatar

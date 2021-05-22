@@ -1,11 +1,11 @@
-#convomessagelistid:after {
-    content:'';
-    display:block;
-    padding-bottom:16px;
-}
-
-div.convomessagelistid > :last-child {
-    margin-bottom: 100px;
-    color: 'green';
-    height: 500px;
+#interaction-root {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 0px 16px 0px;
+    &::after {
+        content: '';
+        display: block;
+        padding-bottom: 16px;
+    }
 }

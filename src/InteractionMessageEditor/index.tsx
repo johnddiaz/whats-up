@@ -1,4 +1,5 @@
 import * as React from 'react'
+import './styles.scss'
 
 interface Props {
     currentDraft: string
@@ -8,20 +9,8 @@ interface Props {
 
 function InteractionMessageEditor(props: Props) {
     return (
-        <div
-            id="convomessageeditor"
-            style={{
-                display: 'flex',
-                justifyContent: 'center',
-                border: '1px solid black',
-            }}
-        >
+        <div id="interactionmessageeditor-root">
             <textarea
-                style={
-                    {
-                        // borderRadius: '24px',
-                    }
-                }
                 onChange={props.handleMessageChange}
                 value={props.currentDraft}
             />
