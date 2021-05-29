@@ -65,14 +65,7 @@ function App() {
     }
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                height: '100%',
-                padding: '32px',
-                boxSizing: 'border-box',
-            }}
-        >
+        <div id="app-root">
             <ChatsLayout>
                 <ChatsToolbar />
                 {conversations.map((convo) => (

@@ -7,14 +7,14 @@
 }
 
 .interactionmessage-self {
-    margin-left: 32px;
-    align-self: end;
+    margin-left: 64px;
+    align-self: flex-end;
     background-color: black;
     color: white;
 }
 
 .interactionmessage-friend {
-    margin-right: 32px;
+    margin-right: 64px;
     align-self: start;
     background-color: white;
     color: black;
