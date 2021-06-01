@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Story, Meta } from '@storybook/react'
 
 import { InteractionMessage, InteractionMessageProps } from './index'
-import { john } from '../__shared__/api-responses/conversations'
+import { john, squishy } from '../__shared__/api-responses/conversations'
 
 export default {
     title: 'Components/InteractionMessage',
@@ -21,6 +21,17 @@ Primary.args = {
         id: john.id,
         senderId: john.id,
         senderName: john.name,
+        text: 'This is a test message!',
+    },
+}
+
+export const Secondary = Template.bind({})
+Secondary.args = {
+    loggedInPerson: john,
+    message: {
+        id: squishy.id,
+        senderId: squishy.id,
+        senderName: squishy.name,
         text: 'This is a test message!',
     },
 }

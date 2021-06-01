@@ -3,7 +3,7 @@ export const john: Person = {
     name: 'John Diaz',
 }
 
-const squishy: Person = {
+export const squishy: Person = {
     id: 2,
     name: 'Squishy',
 }
