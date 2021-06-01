@@ -37,6 +37,11 @@ function Interaction(props: Props) {
                             : undefined
                     }
                     loggedInPerson={john}
+                    placementClass={
+                        john.id === message.senderId
+                            ? 'interactionmessage-placement-self'
+                            : 'interactionmessage-placement-friend'
+                    }
                 />
             ))}
         </div>

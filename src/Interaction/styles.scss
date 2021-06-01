@@ -9,3 +9,13 @@
         padding-bottom: 16px;
     }
 }
+
+.interactionmessage-placement-self {
+    margin-left: 64px;
+    align-self: flex-end;
+}
+
+.interactionmessage-placement-friend {
+    margin-right: 64px;
+    align-self: start;
+}

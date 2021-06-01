@@ -6,21 +6,17 @@
     margin-bottom: 16px;
 }
 
+#interactionmessage-text {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
 .interactionmessage-self {
-    margin-left: 64px;
-    align-self: flex-end;
     background-color: black;
     color: white;
 }
 
 .interactionmessage-friend {
-    margin-right: 64px;
-    align-self: start;
     background-color: white;
     color: black;
-}
-
-#interactionmessage-text {
-    margin: 0;
-    overflow-wrap: anywhere;
 }
