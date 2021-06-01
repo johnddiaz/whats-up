@@ -7,12 +7,12 @@ import {
 } from '../../__shared__/api-responses/conversations'
 import InteractionMessage from '../InteractionMessage'
 
-interface Props {
+interface InteractionProps {
     conversation?: Conversation
     newMessages: Message[]
 }
 
-function Interaction(props: Props) {
+function Interaction(props: InteractionProps) {
     const newestMessageRef = React.useRef<HTMLDivElement | null>(null)
     const messages = [
         ...(props.conversation?.messages ? props.conversation.messages : []),
@@ -49,3 +49,4 @@ function Interaction(props: Props) {
 }
 
 export default Interaction
+export type { InteractionProps }

@@ -10,6 +10,12 @@ interface Props {
 }
 
 function ChatPreview(props: Props) {
+    const messages = props.conversation.messages
+    const lastMessage =
+        messages && messages.length > 0
+            ? messages[messages.length - 1]
+            : undefined
+
     function onPreviewClick() {
         props.onPreviewClick(props.conversation.id)
     }
@@ -18,8 +24,10 @@ function ChatPreview(props: Props) {
         <div id="chatpreview-root" onClick={onPreviewClick}>
             <Avatar />
             <div id="chatpreview-text-root">
-                <h5 style={{ margin: '0' }}>{props.conversation.name}</h5>
-                <p style={{ margin: '0' }}>{props.conversation.lastMessage}</p>
+                <h5 style={{ margin: '0' }}>
+                    {props.conversation.participants[0].name}
+                </h5>
+                <p style={{ margin: '0' }}>{lastMessage?.text}</p>
             </div>
         </div>
     )

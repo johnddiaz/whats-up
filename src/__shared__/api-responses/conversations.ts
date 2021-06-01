@@ -28,8 +28,7 @@ export interface Message {
 
 export interface Conversation {
     id: number
-    name: string
-    lastMessage: string
+    participants: Person[]
     // Messages ordered from oldest to newest
     messages?: Message[]
 }
@@ -37,8 +36,7 @@ export interface Conversation {
 export const conversations: Conversation[] = [
     {
         id: 1,
-        name: squishy.name,
-        lastMessage: 'This is a test message',
+        participants: [squishy],
         messages: [
             {
                 id: 1,
@@ -147,7 +145,6 @@ export const conversations: Conversation[] = [
     },
     {
         id: 2,
-        name: 'Billy Bob',
-        lastMessage: 'Why, hello there.',
+        participants: [billy],
     },
 ]
