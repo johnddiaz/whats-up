@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './styles.scss'
-import '../__shared__/styles.scss'
+import '../../__shared__/styles.scss'
 import ChatPreview from '../ChatPreview'
 import ChatsToolbar from '../ChatsToolbar'
 import {
@@ -8,7 +8,7 @@ import {
     conversations,
     john,
     Message,
-} from '../__shared__/api-responses/conversations'
+} from '../../__shared__/api-responses/conversations'
 import Interaction from '../Interaction'
 import InteractionMessageEditor from '../InteractionMessageEditor'
 import { ChatsLayout, InteractionLayout } from './layouts'

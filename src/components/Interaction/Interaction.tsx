@@ -4,7 +4,7 @@ import {
     Conversation,
     john,
     Message,
-} from '../__shared__/api-responses/conversations'
+} from '../../__shared__/api-responses/conversations'
 import InteractionMessage from '../InteractionMessage'
 
 interface Props {
