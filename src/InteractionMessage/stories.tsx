@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { Story, Meta } from '@storybook/react'
 
-import { InteractionMessage, InteractionMessageProps } from './index'
+import InteractionMessage, { InteractionMessageProps } from './index'
 import { john, squishy } from '../__shared__/api-responses/conversations'
 
 export default {

@@ -1,8 +1,3 @@
-import * as React from 'react'
-import './styles.scss'
-
-function Avatar() {
-    return <div id="avatar-root">?</div>
-}
+import Avatar from './Avatar'
 
 export default Avatar
