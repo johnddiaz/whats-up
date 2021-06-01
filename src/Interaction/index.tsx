@@ -2,6 +2,7 @@ import * as React from 'react'
 import './styles.scss'
 import {
     Conversation,
+    john,
     Message,
 } from '../__shared__/api-responses/conversations'
 import { InteractionMessage } from '../InteractionMessage'
@@ -35,6 +36,7 @@ function Interaction(props: Props) {
                             ? newestMessageRef
                             : undefined
                     }
+                    loggedInPerson={john}
                 />
             ))}
         </div>

@@ -1,24 +1,19 @@
 import * as React from 'react'
 import './styles.scss'
-import {
-    john,
-    Message,
-    Person,
-} from '../__shared__/api-responses/conversations'
+import { Message, Person } from '../__shared__/api-responses/conversations'
 
-interface Props {
+export interface InteractionMessageProps {
     message: Message
-    newestMessageRef: React.MutableRefObject<HTMLDivElement | null> | undefined
+    newestMessageRef?: React.MutableRefObject<HTMLDivElement | null>
+    loggedInPerson: Person
 }
 
-function InteractionMessage(props: Props) {
-    const loggedInPerson: Person = john
-
+function InteractionMessage(props: InteractionMessageProps) {
     return (
         <div
             id="interactionmessage-root"
             className={
-                loggedInPerson?.id === props.message.senderId
+                props.loggedInPerson?.id === props.message.senderId
                     ? 'interactionmessage-self'
                     : 'interactionmessage-friend'
             }
