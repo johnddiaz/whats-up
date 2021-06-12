@@ -22,7 +22,7 @@ function ChatPreview(props: Props) {
 
     return (
         <div id="chatpreview-root" onClick={onPreviewClick}>
-            <Avatar />
+            <Avatar size="sm" />
             <div id="chatpreview-text-root">
                 <h5 style={{ margin: '0' }}>
                     {props.conversation.participants[0].name}
