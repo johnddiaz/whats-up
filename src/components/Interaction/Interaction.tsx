@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './styles.scss'
+import './Interaction.scss'
 import {
     Conversation,
     john,

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './styles.scss'
+import './ChatsToolbar.scss'
 
 function ChatsToolbar() {
     return (

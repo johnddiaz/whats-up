@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './styles.scss'
+import './Avatar.scss'
 
 type AvatarProps = {
     size: 'sm' | 'md' | 'lg'

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './styles.scss'
+import './InteractionMessage.scss'
 import { Message, Person } from '../../__shared__/api-responses/conversations'
 
 export interface InteractionMessageProps {

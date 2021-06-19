@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './styles.scss'
+import './ChatPreview.scss'
 import '../../__shared__/styles.scss'
 import Avatar from '../Avatar'
 import { Conversation } from '../../__shared__/api-responses/conversations'
