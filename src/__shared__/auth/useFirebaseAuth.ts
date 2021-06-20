@@ -26,7 +26,7 @@ function useFirebaseAuth(): [boolean, () => void] {
             .auth()
             .signInWithPopup(githubProvider)
             .catch((error) => {
-\                console.error(`Unable to log in with error ${error}`)
+                console.error(`Unable to log in with error ${error}`)
             })
     }
 
