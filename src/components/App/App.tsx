@@ -12,8 +12,11 @@ import {
 import Interaction from '../Interaction'
 import InteractionMessageEditor from '../InteractionMessageEditor'
 import { ChatsLayout, InteractionLayout } from './layouts'
+import useFirebaseAuth from '../../__shared__/auth/useFirebaseAuth'
 
 function App() {
+    const [user, isSignedIn, showSignInPopup, logOut] = useFirebaseAuth()
+
     const [currentConvo, setCurrentConvo] = useState<Conversation | undefined>()
     const loggedInPerson = john
 
@@ -64,8 +67,9 @@ function App() {
         setCurrentDraft('')
     }
 
-    return (
+    return isSignedIn ? (
         <div id="app-root">
+            <button onClick={logOut}>Log Out</button>
             <ChatsLayout>
                 <ChatsToolbar />
                 {conversations.map((convo) => (
@@ -89,6 +93,8 @@ function App() {
                 />
             </InteractionLayout>
         </div>
+    ) : (
+        <button onClick={showSignInPopup}>Sign In</button>
     )
 }
 
