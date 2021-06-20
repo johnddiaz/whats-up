@@ -12,9 +12,9 @@ const config = {
     measurementId: 'G-K13ZDZ04JX',
 }
 
-function useFirebaseAuth(): [firebase.User | null, boolean, () => void, () => void] {
+function useFirebaseAuth(): [boolean, () => void] {
     const [user, setUser] = useLocalStorageState<firebase.User>('firebaseUser')
-    const isSignedIn = !!user
+    const isLoggedIn = !!user
     const [githubProvider, setGithubProvider] = useState<firebase.auth.GithubAuthProvider | null>(null)
 
     function showSignInPopup() {
@@ -26,17 +26,7 @@ function useFirebaseAuth(): [firebase.User | null, boolean, () => void, () => vo
             .auth()
             .signInWithPopup(githubProvider)
             .catch((error) => {
-                setUser(null)
-                console.error(`Unable to log in with error ${error}`)
-            })
-    }
-
-    function logOut() {
-        firebase
-            .auth()
-            .signOut()
-            .catch((e) => {
-                window.alert(`Unable to sign out with error: ${e}`)
+\                console.error(`Unable to log in with error ${error}`)
             })
     }
 
@@ -45,7 +35,6 @@ function useFirebaseAuth(): [firebase.User | null, boolean, () => void, () => vo
 
         const provider = new firebase.auth.GithubAuthProvider()
         setGithubProvider(provider)
-        
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 // log in
@@ -60,7 +49,7 @@ function useFirebaseAuth(): [firebase.User | null, boolean, () => void, () => vo
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    return [user, isSignedIn, showSignInPopup, logOut]
+    return [isLoggedIn, showSignInPopup]
 }
 
 export default useFirebaseAuth

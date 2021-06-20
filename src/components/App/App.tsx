@@ -12,11 +12,10 @@ import {
 import Interaction from '../Interaction'
 import InteractionMessageEditor from '../InteractionMessageEditor'
 import { ChatsLayout, InteractionLayout } from './layouts'
-import useFirebaseAuth from '../../__shared__/auth/useFirebaseAuth'
+import withAuth from '../../__shared__/auth/withAuth'
+import firebase from 'firebase'
 
 function App() {
-    const [user, isSignedIn, showSignInPopup, logOut] = useFirebaseAuth()
-
     const [currentConvo, setCurrentConvo] = useState<Conversation | undefined>()
     const loggedInPerson = john
 
@@ -67,7 +66,16 @@ function App() {
         setCurrentDraft('')
     }
 
-    return isSignedIn ? (
+    function logOut() {
+        firebase
+            .auth()
+            .signOut()
+            .catch((e) => {
+                window.alert(`Unable to sign out with error ${e}`)
+            })
+    }
+
+    return (
         <div id="app-root">
             <button onClick={logOut}>Log Out</button>
             <ChatsLayout>
@@ -93,9 +101,7 @@ function App() {
                 />
             </InteractionLayout>
         </div>
-    ) : (
-        <button onClick={showSignInPopup}>Sign In</button>
     )
 }
 
-export default App
+export default withAuth(App)
