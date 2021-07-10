@@ -3,10 +3,10 @@ import useFirebaseAuth from './useFirebaseAuth'
 
 function withAuth(WrappedComponent: React.ElementType) {
     return function Hoc(props: Object) {
-        const [isLoggedIn, showSignInPopup] = useFirebaseAuth()
+        const [user, isLoggedIn, showSignInPopup] = useFirebaseAuth()
 
         return isLoggedIn ? (
-            <WrappedComponent {...props} />
+            <WrappedComponent user={user} {...props} />
         ) : (
             <button onClick={showSignInPopup}>Sign in</button>
         )

@@ -12,7 +12,7 @@ const config = {
     measurementId: 'G-K13ZDZ04JX',
 }
 
-function useFirebaseAuth(): [boolean, () => void] {
+function useFirebaseAuth(): [firebase.User | null, boolean, () => void] {
     const [user, setUser] = useLocalStorageState<firebase.User>('firebaseUser')
     const isLoggedIn = !!user
     const [githubProvider, setGithubProvider] = useState<firebase.auth.GithubAuthProvider | null>(null)
@@ -31,8 +31,9 @@ function useFirebaseAuth(): [boolean, () => void] {
     }
 
     useEffect(() => {
-        firebase.initializeApp(config)
-
+        if (firebase.apps.length === 0) {
+            firebase.initializeApp(config)
+        }
         const provider = new firebase.auth.GithubAuthProvider()
         setGithubProvider(provider)
         firebase.auth().onAuthStateChanged((user) => {
@@ -49,7 +50,7 @@ function useFirebaseAuth(): [boolean, () => void] {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    return [isLoggedIn, showSignInPopup]
+    return [user, isLoggedIn, showSignInPopup]
 }
 
 export default useFirebaseAuth

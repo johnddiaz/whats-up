@@ -15,7 +15,11 @@ import { ChatsLayout, InteractionLayout } from './layouts'
 import withAuth from '../../__shared__/auth/withAuth'
 import firebase from 'firebase'
 
-function App() {
+interface AppProps {
+    user: firebase.User | null
+}
+
+function App(props: AppProps) {
     const [currentConvo, setCurrentConvo] = useState<Conversation | undefined>()
     const loggedInPerson = john
 
@@ -50,7 +54,7 @@ function App() {
     function handleSend(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
         e.preventDefault()
 
-        if (!loggedInPerson) {
+        if (!loggedInPerson || !props.user) {
             console.error('not logged in')
             return
         }
@@ -62,8 +66,25 @@ function App() {
             text: currentDraft,
         }
 
-        setNewMessages((prev) => [...prev, message])
-        setCurrentDraft('')
+        const messagesRef = firebase
+            .database()
+            .ref(`users/${props.user.uid}/messages`)
+        const newMessageRef = messagesRef.push()
+        newMessageRef.set(
+            {
+                content: message.text,
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                updatedAt: firebase.database.ServerValue.TIMESTAMP,
+            },
+            (error) => {
+                if (error) {
+                    alert(`something went wrong... ${error}`)
+                } else {
+                    setNewMessages((prev) => [...prev, message])
+                    setCurrentDraft('')
+                }
+            }
+        )
     }
 
     function logOut() {
