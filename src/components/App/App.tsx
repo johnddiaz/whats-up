@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './styles.scss'
 import '../../__shared__/styles.scss'
 import ChatPreview from '../ChatPreview'
-import ChatsToolbar from '../ChatsToolbar'
+import HomeToolbar from '../ChatsToolbar'
 import {
     Conversation,
     conversations,
@@ -11,9 +11,10 @@ import {
 } from '../../__shared__/api-responses/conversations'
 import Interaction from '../Interaction'
 import InteractionMessageEditor from '../InteractionMessageEditor'
-import { ChatsLayout, InteractionLayout } from './layouts'
+import { ChatsLayout as HomeLayout, InteractionLayout } from './layouts'
 import withAuth from '../../__shared__/auth/withAuth'
 import firebase from 'firebase'
+import InteractionCreator from '../InteractionCreator'
 
 interface AppProps {
     user: firebase.User | null
@@ -28,9 +29,7 @@ function App(props: AppProps) {
 
     function handlePreviewSelect(id: number) {
         const convo = conversations.find((convo) => convo.id === id)
-        if (convo) {
-            setCurrentConvo(convo)
-        }
+        setCurrentConvo(convo || undefined)
     }
 
     function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -49,6 +48,53 @@ function App(props: AppProps) {
         }
 
         return lastId + 1
+    }
+
+    async function createConversation(friendId: string) {
+        if (!loggedInPerson || !props.user) {
+            console.error('not logged in')
+            return
+        }
+
+        try {
+            const db = firebase.database()
+
+            // Check if friendId is valid
+            const snapshot = await db.ref(`users/${friendId}`).once('value')
+            if (!snapshot.val()) {
+                alert(`Friend ID ${friendId} does not exist.`)
+                return
+            }
+
+            // Create new conversation
+            const conversationRef = await db.ref(`conversations`).push()
+            const conversationId = conversationRef.key
+            alert(`Created conversation ${conversationId}`)
+            await conversationRef.set({
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                creatorId: props.user.uid,
+            })
+            alert('Set successful')
+
+            const everythingElse: Record<string, any> = {}
+
+            // For self
+            everythingElse[
+                `userConversations/${props.user.uid}/${conversationId}`
+            ] = true
+            everythingElse[
+                `conversationUsers/${conversationId}/${props.user.uid}`
+            ] = true
+
+            // For friend
+            everythingElse[`userInvitations/${conversationId}/${friendId}`] = {
+                invitedBy: props.user.uid,
+            }
+
+            await db.ref().update(everythingElse)
+        } catch (outerError) {
+            alert(`something went wrong: ${outerError}`)
+        }
     }
 
     function handleSend(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
@@ -72,6 +118,8 @@ function App(props: AppProps) {
         const newMessageRef = messagesRef.push()
         newMessageRef.set(
             {
+                // TODO have firebase add the sender programmatically based on auth token
+                sender: props.user.uid,
                 content: message.text,
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
                 updatedAt: firebase.database.ServerValue.TIMESTAMP,
@@ -99,8 +147,8 @@ function App(props: AppProps) {
     return (
         <div id="app-root">
             <button onClick={logOut}>Log Out</button>
-            <ChatsLayout>
-                <ChatsToolbar />
+            <HomeLayout>
+                <HomeToolbar />
                 {conversations.map((convo) => (
                     <ChatPreview
                         key={convo.id}
@@ -108,18 +156,26 @@ function App(props: AppProps) {
                         onPreviewClick={handlePreviewSelect}
                     />
                 ))}
-            </ChatsLayout>
+            </HomeLayout>
             <InteractionLayout>
                 {/* Header */}
-                <Interaction
-                    conversation={currentConvo}
-                    newMessages={newMessages}
-                />
-                <InteractionMessageEditor
-                    currentDraft={currentDraft}
-                    handleMessageChange={handleMessageChange}
-                    handleSend={handleSend}
-                />
+                {currentConvo ? (
+                    <>
+                        <Interaction
+                            conversation={currentConvo}
+                            newMessages={newMessages}
+                        />
+                        <InteractionMessageEditor
+                            currentDraft={currentDraft}
+                            handleMessageChange={handleMessageChange}
+                            handleSend={handleSend}
+                        />
+                    </>
+                ) : (
+                    <InteractionCreator
+                        createConversation={createConversation}
+                    />
+                )}
             </InteractionLayout>
         </div>
     )

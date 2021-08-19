@@ -30,6 +30,16 @@ function useFirebaseAuth(): [firebase.User | null, boolean, () => void] {
             })
     }
 
+    async function createUserInFirebaseIfNonexistent(user: firebase.User) {
+        const snapshot = await firebase.database().ref(`users/${user.uid}`).once('value')
+        if (!snapshot.val()) {
+            alert(`User ${user.uid} does not exist. Creating now.`)
+            await firebase.database().ref(`users/${user.uid}`).set(true)
+            alert('Created new user.')
+        }
+        
+    }
+
     useEffect(() => {
         if (firebase.apps.length === 0) {
             firebase.initializeApp(config)
@@ -40,6 +50,7 @@ function useFirebaseAuth(): [firebase.User | null, boolean, () => void] {
             if (user) {
                 // log in
                 setUser(user)
+                createUserInFirebaseIfNonexistent(user)
                 console.log('logged in by useEffect')
             } else {
                 // log out
