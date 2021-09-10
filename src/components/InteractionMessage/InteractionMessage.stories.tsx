@@ -15,23 +15,23 @@ const Template: Story<InteractionMessageProps> = (args) => (
 )
 
 export const Primary = Template.bind({})
-Primary.args = {
-    loggedInPerson: john,
-    message: {
-        id: john.id,
-        senderId: john.id,
-        senderName: john.name,
-        text: 'This is a test message!',
-    },
-}
+// Primary.args = {
+//     loggedInPerson: john,
+//     message: {
+//         id: john.id,
+//         senderId: john.id,
+//         senderName: john.name,
+//         text: 'This is a test message!',
+//     },
+// }
 
 export const Secondary = Template.bind({})
-Secondary.args = {
-    loggedInPerson: john,
-    message: {
-        id: squishy.id,
-        senderId: squishy.id,
-        senderName: squishy.name,
-        text: 'This is a test message!',
-    },
-}
+// Secondary.args = {
+//     loggedInPerson: john,
+//     message: {
+//         id: squishy.id,
+//         senderId: squishy.id,
+//         senderName: squishy.name,
+//         text: 'This is a test message!',
+//     },
+// }

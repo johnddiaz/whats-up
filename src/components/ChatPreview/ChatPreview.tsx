@@ -27,7 +27,7 @@ function ChatPreview(props: Props) {
                 <h5 style={{ margin: '0' }}>
                     {props.conversation.participants[0].name}
                 </h5>
-                <p style={{ margin: '0' }}>{lastMessage?.text}</p>
+                <p style={{ margin: '0' }}>{lastMessage?.content}</p>
             </div>
         </div>
     )

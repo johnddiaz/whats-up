@@ -11,7 +11,7 @@ export interface InteractionMessageProps {
 
 function InteractionMessage(props: InteractionMessageProps) {
     const personClass =
-        props.loggedInPerson.id === props.message.senderId
+        props.loggedInPerson.id === props.message.sender
             ? 'interactionmessage-self'
             : 'interactionmessage-friend'
     const placementClass = props.placementClass ? props.placementClass : ''
@@ -22,7 +22,7 @@ function InteractionMessage(props: InteractionMessageProps) {
             className={`${personClass} ${placementClass}`}
             ref={props.newestMessageRef}
         >
-            <p id="interactionmessage-text">{props.message.text}</p>
+            <p id="interactionmessage-text">{props.message.content}</p>
         </div>
     )
 }

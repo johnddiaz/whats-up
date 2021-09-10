@@ -14,36 +14,36 @@ export default {
 const Template: Story<InteractionProps> = (args) => <Interaction {...args} />
 
 export const Default = Template.bind({})
-Default.args = {
-    conversation: {
-        id: 1,
-        participants: [squishy],
-        messages: [
-            {
-                id: 1,
-                senderId: john.id,
-                senderName: john.name,
-                text: `Hey, howsitgoin? I'm bored.`,
-            },
-            {
-                id: 2,
-                senderId: squishy.id,
-                senderName: squishy.name,
-                text: 'Good, howaboutchu?',
-            },
-            {
-                id: 3,
-                senderId: john.id,
-                senderName: john.name,
-                text: 'Eggcelent.',
-            },
-            {
-                id: 4,
-                senderId: squishy.id,
-                senderName: squishy.name,
-                text: `Cool beans, good sir. Well, take care, don't talk to strangers, and stay safe!`,
-            },
-        ],
-    },
-    newMessages: [],
-}
+// Default.args = {
+//     conversation: {
+//         id: 1,
+//         participants: [squishy],
+//         messages: [
+//             {
+//                 id: 1,
+//                 senderId: john.id,
+//                 senderName: john.name,
+//                 text: `Hey, howsitgoin? I'm bored.`,
+//             },
+//             {
+//                 id: 2,
+//                 senderId: squishy.id,
+//                 senderName: squishy.name,
+//                 text: 'Good, howaboutchu?',
+//             },
+//             {
+//                 id: 3,
+//                 senderId: john.id,
+//                 senderName: john.name,
+//                 text: 'Eggcelent.',
+//             },
+//             {
+//                 id: 4,
+//                 senderId: squishy.id,
+//                 senderName: squishy.name,
+//                 text: `Cool beans, good sir. Well, take care, don't talk to strangers, and stay safe!`,
+//             },
+//         ],
+//     },
+//     newMessages: [],
+// }

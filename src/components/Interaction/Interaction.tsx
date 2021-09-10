@@ -29,7 +29,7 @@ function Interaction(props: InteractionProps) {
         <div id="interaction-root">
             {messages.map((message, index) => (
                 <InteractionMessage
-                    key={message.id}
+                    // key={message.}
                     message={message}
                     newestMessageRef={
                         index === messages.length - 1
@@ -38,7 +38,7 @@ function Interaction(props: InteractionProps) {
                     }
                     loggedInPerson={john}
                     placementClass={
-                        john.id === message.senderId
+                        john.id === message.sender
                             ? 'interactionmessage-placement-self'
                             : 'interactionmessage-placement-friend'
                     }

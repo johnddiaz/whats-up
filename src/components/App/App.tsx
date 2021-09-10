@@ -5,7 +5,7 @@ import ChatPreview from '../ChatPreview'
 import HomeToolbar from '../ChatsToolbar'
 import {
     Conversation,
-    conversations,
+    // conversations,
     john,
     Message,
 } from '../../__shared__/api-responses/conversations'
@@ -15,21 +15,27 @@ import { ChatsLayout as HomeLayout, InteractionLayout } from './layouts'
 import withAuth from '../../__shared__/auth/withAuth'
 import firebase from 'firebase'
 import InteractionCreator from '../InteractionCreator'
+import { useEffect } from 'react'
+import { useConversation } from '../../__shared__/hooks/useConversation'
 
 interface AppProps {
     user: firebase.User | null
 }
 
 function App(props: AppProps) {
-    const [currentConvo, setCurrentConvo] = useState<Conversation | undefined>()
+    const appInitiated = firebase.apps.length > 0
+    const [messages, setMessages, setCurrentConversationId] = useConversation(
+        appInitiated,
+        props.user?.uid
+    )
     const loggedInPerson = john
 
     const [currentDraft, setCurrentDraft] = React.useState('')
-    const [newMessages, setNewMessages] = React.useState<Message[]>([])
 
     function handlePreviewSelect(id: number) {
-        const convo = conversations.find((convo) => convo.id === id)
-        setCurrentConvo(convo || undefined)
+        alert('handlePreviewSelect() is not supported right now')
+        // const convo = conversations.find((convo) => convo.id === id)
+        // setCurrentConversation(convo || undefined)
     }
 
     function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -38,16 +44,17 @@ function App(props: AppProps) {
     }
 
     function makeNewMessageId(): number {
-        let lastId: number
+        // let lastId: number
 
-        if (newMessages.length === 0) {
-            const messages = currentConvo?.messages
-            lastId = messages ? messages[messages.length - 1].id : 0
-        } else {
-            lastId = newMessages[newMessages.length - 1].id
-        }
+        // if (newMessages.length === 0) {
+        //     const messages = currentConversation?.messages
+        //     lastId = messages ? messages[messages.length - 1].id : 0
+        // } else {
+        //     lastId = newMessages[newMessages.length - 1].id
+        // }
 
-        return lastId + 1
+        // return lastId + 1
+        return 0
     }
 
     async function createConversation(friendId: string) {
@@ -69,12 +76,12 @@ function App(props: AppProps) {
             // Create new conversation
             const conversationRef = await db.ref(`conversations`).push()
             const conversationId = conversationRef.key
-            alert(`Created conversation ${conversationId}`)
+            console.log(`Created conversation ${conversationId}`)
             await conversationRef.set({
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
                 creatorId: props.user.uid,
             })
-            alert('Set successful')
+            console.log('Set successful')
 
             const everythingElse: Record<string, any> = {}
 
@@ -92,47 +99,42 @@ function App(props: AppProps) {
             }
 
             await db.ref().update(everythingElse)
+
+            setCurrentConversationId(conversationId)
         } catch (outerError) {
             alert(`something went wrong: ${outerError}`)
         }
     }
 
-    function handleSend(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
+    async function handleSend(
+        e: React.MouseEvent<HTMLInputElement, MouseEvent>
+    ) {
         e.preventDefault()
 
-        if (!loggedInPerson || !props.user) {
+        alert('handleSend not working yet')
+
+        if (!loggedInPerson || !props.user || !appInitiated) {
             console.error('not logged in')
             return
         }
 
         const message: Message = {
-            id: makeNewMessageId(),
-            senderId: loggedInPerson?.id,
-            senderName: loggedInPerson?.name,
-            text: currentDraft,
+            sender: loggedInPerson?.id,
+            createdAt: loggedInPerson?.name,
+            content: currentDraft,
         }
 
-        const messagesRef = firebase
+        const newMessageRef = await firebase
             .database()
             .ref(`users/${props.user.uid}/messages`)
-        const newMessageRef = messagesRef.push()
-        newMessageRef.set(
-            {
-                // TODO have firebase add the sender programmatically based on auth token
-                sender: props.user.uid,
-                content: message.text,
-                createdAt: firebase.database.ServerValue.TIMESTAMP,
-                updatedAt: firebase.database.ServerValue.TIMESTAMP,
-            },
-            (error) => {
-                if (error) {
-                    alert(`something went wrong... ${error}`)
-                } else {
-                    setNewMessages((prev) => [...prev, message])
-                    setCurrentDraft('')
-                }
+            .push()
+        newMessageRef.set(message, (error) => {
+            if (error) {
+                alert(`something went wrong... ${error}`)
+            } else {
+                setCurrentDraft('')
             }
-        )
+        })
     }
 
     function logOut() {
@@ -149,20 +151,20 @@ function App(props: AppProps) {
             <button onClick={logOut}>Log Out</button>
             <HomeLayout>
                 <HomeToolbar />
-                {conversations.map((convo) => (
+                {/* {conversations.map((convo) => (
                     <ChatPreview
                         key={convo.id}
                         conversation={convo}
                         onPreviewClick={handlePreviewSelect}
                     />
-                ))}
+                ))} */}
             </HomeLayout>
             <InteractionLayout>
                 {/* Header */}
-                {currentConvo ? (
+                {/* {currentConversation ? (
                     <>
                         <Interaction
-                            conversation={currentConvo}
+                            conversation={currentConversation}
                             newMessages={newMessages}
                         />
                         <InteractionMessageEditor
@@ -171,11 +173,9 @@ function App(props: AppProps) {
                             handleSend={handleSend}
                         />
                     </>
-                ) : (
-                    <InteractionCreator
-                        createConversation={createConversation}
-                    />
-                )}
+                ) : ( */}
+                <InteractionCreator createConversation={createConversation} />
+                {/* )} */}
             </InteractionLayout>
         </div>
     )
