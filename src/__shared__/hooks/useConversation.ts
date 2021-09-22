@@ -17,11 +17,11 @@ export function useConversation(
 ): {
     messages: firebase.database.DataSnapshot[],
     setMessages: React.Dispatch<React.SetStateAction<firebase.database.DataSnapshot[]>>,
-    conversations: firebase.database.DataSnapshot[],
+    conversations: ClientConversation[],
     conversationId: string | null,
     setConversationId: React.Dispatch<React.SetStateAction<string | null>>,
 } {
-    const [conversations, setConversations] = useState<firebase.database.DataSnapshot[]>([])
+    const [conversations, setConversations] = useState<ClientConversation[]>([])
     const [conversationId, setConversationId] = useState<string | null>(
         null
     )
@@ -51,6 +51,7 @@ export function useConversation(
 
             ;(async () => {
                 const userConversationsOnce = await userConversationsRef
+                    .orderByKey()
                     .once('value')
                 const initialConversations: ClientConversation[] = []
                 if (!userConversationsOnce.exists()) {
@@ -60,7 +61,7 @@ export function useConversation(
 
                 const cuPromises: Promise<firebase.database.DataSnapshot>[] = []
                 userConversationsOnce.forEach((uc) => {
-                    cuPromises.push(db.ref(`conversationUsers/${uc.key}`).once('value'))
+                    cuPromises.push(db.ref(`conversationUsers/${uc.key}`).orderByKey().once('value'))
                 })
                 const cuResolved = await Promise.all(cuPromises)
 
@@ -91,24 +92,39 @@ export function useConversation(
                 })
 
                 console.table(initialConversations)
-                
-                return
-                
 
-                // const lastInitialUserConversationId =
-                //     initialConversations.length > 0
-                //         ? initialConversations[initialConversations.length - 1].key
-                //         : null
-                // userConversationsRef
-                //     .orderByKey()
-                //     .startAfter(lastInitialUserConversationId)
-                //     .on('child_added', (userConversationSnapshot, previousChildKey) => {
-                //         const conversationValue = userConversationSnapshot.val()
-                //         setConversations((prev) => [...prev, conversationValue])
-                //         console.log(
-                //             `New conversation: ${JSON.stringify(conversationValue)}`
-                //         )
-                //     })
+                setConversations((prev) => [...prev, ...initialConversations])
+
+                const lastInitialUserConversationId =
+                    initialConversations.length > 0
+                        ? initialConversations[initialConversations.length - 1].id
+                        : null
+                userConversationsRef
+                    .orderByKey()
+                    .startAfter(lastInitialUserConversationId)
+                    .on('child_added', (userConversationSnapshot, previousChildKey) => {
+                        // userConversationSnapshot.key is a new conversation key
+                        const ucKey = userConversationSnapshot.key
+                        if (ucKey) {
+                            db.ref(`conversationUsers/${ucKey}`).orderByKey().once('value').then(newConversationUsers => {
+                                const convo: ClientConversation = {
+                                    id: ucKey,
+                                    otherUsers: []
+                                }
+                                newConversationUsers.forEach(ncu => {
+                                    if (ncu.key) {
+                                        convo.otherUsers.push({
+                                            id: ncu.key
+                                        })
+                                    }
+                                })
+                                setConversations((prev) => [...prev, convo])
+                                console.log(
+                                    `New conversation: ${JSON.stringify(convo)}`
+                                )
+                            })
+                        }
+                    })
             })()
 
             return () => {
