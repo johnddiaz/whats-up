@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ChatsLayout(props: { children: React.ReactNode }) {
+export function ChatsLayout(props: { children: React.ReactNode }) {
     return (
         <div
             style={{
@@ -15,7 +15,7 @@ function ChatsLayout(props: { children: React.ReactNode }) {
     )
 }
 
-function InteractionLayout(props: { children: React.ReactNode }) {
+export function InteractionLayout(props: { children: React.ReactNode }) {
     return (
         <div
             style={{
@@ -32,5 +32,3 @@ function InteractionLayout(props: { children: React.ReactNode }) {
         </div>
     )
 }
-
-export { ChatsLayout, InteractionLayout }

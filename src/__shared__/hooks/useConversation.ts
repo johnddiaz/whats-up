@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import firebase from 'firebase'
 
+export interface ServerMessage {
+    content: string;
+    sender?: string;
+    createdAt?: string;
+}
+
+export interface ClientMessage extends ServerMessage {
+    id: string;
+}
+
 interface ClientUser {
     id: string;
     name?: string;
 }
 
-interface ClientConversation {
+export interface ClientConversation {
     id: string;
     otherUsers: ClientUser[]
 }
@@ -15,17 +25,18 @@ export function useConversation(
     initialized: boolean,
     userId?: string
 ): {
-    messages: firebase.database.DataSnapshot[],
-    setMessages: React.Dispatch<React.SetStateAction<firebase.database.DataSnapshot[]>>,
+    messages: ClientMessage[],
+    setMessages: React.Dispatch<React.SetStateAction<ClientMessage[]>>,
     conversations: ClientConversation[],
     conversationId: string | null,
     setConversationId: React.Dispatch<React.SetStateAction<string | null>>,
 } {
     const [conversations, setConversations] = useState<ClientConversation[]>([])
     const [conversationId, setConversationId] = useState<string | null>(
-        null
+        // null
+        '-Mhq8wgUkPd0Qs0_cCqV'
     )
-    const [messages, setMessages] = useState<firebase.database.DataSnapshot[]>(
+    const [messages, setMessages] = useState<ClientMessage[]>(
         []
     )
 
@@ -91,9 +102,7 @@ export function useConversation(
                     initialConversations.push(convo)
                 })
 
-                console.table(initialConversations)
-
-                setConversations((prev) => [...prev, ...initialConversations])
+                setConversations((prev) => initialConversations)
 
                 const lastInitialUserConversationId =
                     initialConversations.length > 0
@@ -149,11 +158,17 @@ export function useConversation(
                 const messagesOnce = await messagesRef
                     .orderByKey()
                     .once('value')
-                const initialMessages: firebase.database.DataSnapshot[] = []
+                const initialMessages: ClientMessage[] = []
                 // This if else may not really be necessary.
                 if (messagesOnce.exists()) {
                     messagesOnce.forEach((m) => {
-                        initialMessages.push(m)
+                        if (m.key) {
+                            const serverMessage = m.toJSON() as ServerMessage
+                            initialMessages.push({
+                                ...serverMessage,
+                                id: m.key
+                            })
+                        }
                     })
                     setMessages(initialMessages)
                     console.log(
@@ -165,17 +180,24 @@ export function useConversation(
                 }
                 const lastInitialMessageId =
                     initialMessages.length > 0
-                        ? initialMessages[initialMessages.length - 1].key
+                        ? initialMessages[initialMessages.length - 1].id
                         : null
                 messagesRef
                     .orderByKey()
                     .startAfter(lastInitialMessageId)
                     .on('child_added', (messageSnapshot, previousChildKey) => {
-                        const messageValue = messageSnapshot.val()
-                        setMessages((prev) => [...prev, messageValue])
-                        console.log(
-                            `New message: ${JSON.stringify(messageValue)}`
-                        )
+                        if (messageSnapshot.key) {
+                            const serverMessage = messageSnapshot.toJSON() as ServerMessage
+                            const clientMessage: ClientMessage = {
+                                ...serverMessage,
+                                id: messageSnapshot.key
+                            }
+                            setMessages((prev) => [...prev, clientMessage])
+                            console.log(
+                                `New message ${messageSnapshot.key}: ${clientMessage}`
+                            )
+                        }
+                        
                     })
             })()
 

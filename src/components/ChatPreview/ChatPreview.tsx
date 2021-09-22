@@ -3,19 +3,14 @@ import './ChatPreview.scss'
 import '../../__shared__/styles.scss'
 import Avatar from '../Avatar'
 import { Conversation } from '../../__shared__/api-responses/conversations'
+import { ClientConversation } from '../../__shared__/hooks/useConversation'
 
 interface Props {
-    conversation: Conversation
-    onPreviewClick: (id: number) => void
+    conversation: ClientConversation
+    onPreviewClick: (id: string) => void
 }
 
 function ChatPreview(props: Props) {
-    const messages = props.conversation.messages
-    const lastMessage =
-        messages && messages.length > 0
-            ? messages[messages.length - 1]
-            : undefined
-
     function onPreviewClick() {
         props.onPreviewClick(props.conversation.id)
     }
@@ -24,10 +19,24 @@ function ChatPreview(props: Props) {
         <div id="chatpreview-root" onClick={onPreviewClick}>
             <Avatar size="sm" />
             <div id="chatpreview-text-root">
+                <h4 style={{ margin: '0 0 8px' }}>{props.conversation.id}</h4>
                 <h5 style={{ margin: '0' }}>
-                    {props.conversation.participants[0].name}
+                    {props.conversation.otherUsers.length > 0
+                        ? props.conversation.otherUsers.map(
+                              (user, index, original) => {
+                                  if (
+                                      original.length === 1 ||
+                                      index === original.length - 1
+                                  ) {
+                                      return user.id
+                                  } else {
+                                      return `${user.id}, `
+                                  }
+                              }
+                          )
+                        : 'No other users here.'}
                 </h5>
-                <p style={{ margin: '0' }}>{lastMessage?.content}</p>
+                <p style={{ margin: '0' }}>Last message would go here.</p>
             </div>
         </div>
     )

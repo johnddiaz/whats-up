@@ -6,6 +6,7 @@ import {
     Message,
 } from '../../__shared__/api-responses/conversations'
 import InteractionMessage from '../InteractionMessage'
+import { ClientConversation } from '../../__shared__/hooks/useConversation'
 
 interface InteractionProps {
     conversation?: Conversation

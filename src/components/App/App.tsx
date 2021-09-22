@@ -16,7 +16,11 @@ import withAuth from '../../__shared__/auth/withAuth'
 import firebase from 'firebase'
 import InteractionCreator from '../InteractionCreator'
 import { useEffect } from 'react'
-import { useConversation } from '../../__shared__/hooks/useConversation'
+import {
+    ClientConversation,
+    ClientMessage,
+    useConversation,
+} from '../../__shared__/hooks/useConversation'
 
 interface AppProps {
     user: firebase.User | null
@@ -31,14 +35,12 @@ function App(props: AppProps) {
         conversationId,
         setConversationId,
     } = useConversation(appInitiated, props.user?.uid)
-    const loggedInPerson = john
 
     const [currentDraft, setCurrentDraft] = React.useState('')
 
-    function handlePreviewSelect(id: number) {
-        alert('handlePreviewSelect() is not supported right now')
-        // const convo = conversations.find((convo) => convo.id === id)
-        // setCurrentConversation(convo || undefined)
+    function handlePreviewSelect(id: string) {
+        setConversationId(id)
+        console.log('conversation id changed to ', id)
     }
 
     function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -61,7 +63,7 @@ function App(props: AppProps) {
     }
 
     async function createConversation(friendId: string) {
-        if (!loggedInPerson || !props.user) {
+        if (!props.user) {
             console.error('not logged in')
             return
         }
@@ -116,14 +118,14 @@ function App(props: AppProps) {
 
         alert('handleSend not working yet')
 
-        if (!loggedInPerson || !props.user || !appInitiated) {
+        if (!props.user || !appInitiated) {
             console.error('not logged in')
             return
         }
 
-        const message: Message = {
-            sender: loggedInPerson?.id,
-            createdAt: loggedInPerson?.name,
+        const message = {
+            sender: props.user.uid,
+            createdAt: firebase.database.ServerValue.TIMESTAMP,
             content: currentDraft,
         }
 
@@ -154,21 +156,21 @@ function App(props: AppProps) {
             <button onClick={logOut}>Log Out</button>
             <HomeLayout>
                 <HomeToolbar />
-                {/* {conversations.map((convo) => (
+                {conversations.map((convo) => (
                     <ChatPreview
                         key={convo.id}
                         conversation={convo}
                         onPreviewClick={handlePreviewSelect}
                     />
-                ))} */}
+                ))}
             </HomeLayout>
             <InteractionLayout>
                 {/* Header */}
-                {/* {currentConversation ? (
+                {/* {conversationId ? (
                     <>
                         <Interaction
-                            conversation={currentConversation}
-                            newMessages={newMessages}
+                            conversation={conversations.find(c => c.id === conversationId) as ClientConversation}
+                            newMessages={messages}
                         />
                         <InteractionMessageEditor
                             currentDraft={currentDraft}
