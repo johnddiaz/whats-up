@@ -116,8 +116,6 @@ function App(props: AppProps) {
     ) {
         e.preventDefault()
 
-        alert('handleSend not working yet')
-
         if (!props.user || !appInitiated) {
             console.error('not logged in')
             return
@@ -131,7 +129,7 @@ function App(props: AppProps) {
 
         const newMessageRef = await firebase
             .database()
-            .ref(`users/${props.user.uid}/messages`)
+            .ref(`messages/${conversationId}`)
             .push()
         newMessageRef.set(message, (error) => {
             if (error) {
@@ -166,21 +164,29 @@ function App(props: AppProps) {
             </HomeLayout>
             <InteractionLayout>
                 {/* Header */}
-                {/* {conversationId ? (
+                {conversationId && props.user ? (
                     <>
                         <Interaction
-                            conversation={conversations.find(c => c.id === conversationId) as ClientConversation}
-                            newMessages={messages}
+                            userId={props.user.uid}
+                            conversation={
+                                conversations.find(
+                                    (c) => c.id === conversationId
+                                ) as ClientConversation
+                            }
+                            messages={messages}
                         />
                         <InteractionMessageEditor
+                            // userId={props.user.uid}
                             currentDraft={currentDraft}
                             handleMessageChange={handleMessageChange}
                             handleSend={handleSend}
                         />
                     </>
-                ) : ( */}
-                <InteractionCreator createConversation={createConversation} />
-                {/* )} */}
+                ) : (
+                    <InteractionCreator
+                        createConversation={createConversation}
+                    />
+                )}
             </InteractionLayout>
         </div>
     )

@@ -1,17 +1,18 @@
 import * as React from 'react'
 import './InteractionMessage.scss'
 import { Message, Person } from '../../__shared__/api-responses/conversations'
+import { ClientMessage } from '../../__shared__/hooks/useConversation'
 
 export interface InteractionMessageProps {
-    message: Message
+    userId: string
+    message: ClientMessage
     newestMessageRef?: React.MutableRefObject<HTMLDivElement | null>
-    loggedInPerson: Person
     placementClass?: string
 }
 
 function InteractionMessage(props: InteractionMessageProps) {
     const personClass =
-        props.loggedInPerson.id === props.message.sender
+        props.userId && props.userId === props.message.sender
             ? 'interactionmessage-self'
             : 'interactionmessage-friend'
     const placementClass = props.placementClass ? props.placementClass : ''

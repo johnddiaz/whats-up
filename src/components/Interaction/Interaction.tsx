@@ -6,40 +6,40 @@ import {
     Message,
 } from '../../__shared__/api-responses/conversations'
 import InteractionMessage from '../InteractionMessage'
-import { ClientConversation } from '../../__shared__/hooks/useConversation'
+import {
+    ClientConversation,
+    ClientMessage,
+} from '../../__shared__/hooks/useConversation'
 
 interface InteractionProps {
-    conversation?: Conversation
-    newMessages: Message[]
+    userId: string
+    conversation: ClientConversation
+    messages: ClientMessage[]
 }
 
 function Interaction(props: InteractionProps) {
     const newestMessageRef = React.useRef<HTMLDivElement | null>(null)
-    const messages = [
-        ...(props.conversation?.messages ? props.conversation.messages : []),
-        ...props.newMessages,
-    ]
 
     React.useEffect(() => {
         if (newestMessageRef.current) {
             newestMessageRef.current.scrollIntoView({ behavior: 'smooth' })
         }
-    }, [messages.length])
+    }, [props.messages.length])
 
     return (
         <div id="interaction-root">
-            {messages.map((message, index) => (
+            {props.messages.map((message, index) => (
                 <InteractionMessage
-                    // key={message.}
+                    key={message.id}
                     message={message}
                     newestMessageRef={
-                        index === messages.length - 1
+                        index === props.messages.length - 1
                             ? newestMessageRef
                             : undefined
                     }
-                    loggedInPerson={john}
+                    userId={props.userId}
                     placementClass={
-                        john.id === message.sender
+                        props.userId && props.userId === message.sender
                             ? 'interactionmessage-placement-self'
                             : 'interactionmessage-placement-friend'
                     }
