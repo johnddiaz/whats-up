@@ -24,10 +24,13 @@ interface AppProps {
 
 function App(props: AppProps) {
     const appInitiated = firebase.apps.length > 0
-    const [messages, setMessages, setCurrentConversationId] = useConversation(
-        appInitiated,
-        props.user?.uid
-    )
+    const {
+        messages,
+        setMessages,
+        conversations,
+        conversationId,
+        setConversationId,
+    } = useConversation(appInitiated, props.user?.uid)
     const loggedInPerson = john
 
     const [currentDraft, setCurrentDraft] = React.useState('')
@@ -100,7 +103,7 @@ function App(props: AppProps) {
 
             await db.ref().update(everythingElse)
 
-            setCurrentConversationId(conversationId)
+            setConversationId(conversationId)
         } catch (outerError) {
             alert(`something went wrong: ${outerError}`)
         }

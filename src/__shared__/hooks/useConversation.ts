@@ -1,20 +1,124 @@
 import React, { useState, useEffect } from 'react'
 import firebase from 'firebase'
 
+interface ClientUser {
+    id: string;
+    name?: string;
+}
+
+interface ClientConversation {
+    id: string;
+    otherUsers: ClientUser[]
+}
+
 export function useConversation(
     initialized: boolean,
     userId?: string
-): [
-    firebase.database.DataSnapshot[],
-    React.Dispatch<React.SetStateAction<firebase.database.DataSnapshot[]>>,
-    React.Dispatch<React.SetStateAction<string | null>>
-] {
+): {
+    messages: firebase.database.DataSnapshot[],
+    setMessages: React.Dispatch<React.SetStateAction<firebase.database.DataSnapshot[]>>,
+    conversations: firebase.database.DataSnapshot[],
+    conversationId: string | null,
+    setConversationId: React.Dispatch<React.SetStateAction<string | null>>,
+} {
+    const [conversations, setConversations] = useState<firebase.database.DataSnapshot[]>([])
     const [conversationId, setConversationId] = useState<string | null>(
         null
     )
     const [messages, setMessages] = useState<firebase.database.DataSnapshot[]>(
         []
     )
+
+    useEffect(() => {
+        try {
+            if (!initialized || !userId) {
+                return
+            }
+
+            const db = firebase.database()
+            
+            const userConversationsRefString = `userConversations/${userId}`
+            const userConversationsRef = db.ref(userConversationsRefString)
+
+            const conversationsRefString = 'conversations'
+            const conversationsRef = db.ref(conversationsRefString)
+
+            // What I need to do next is display a list of conversations in the UI that the user has access to.
+            // I need to use a combination of userConversations and conversations.
+            // userConversations for knowing which user has access to what conversation,
+            // and conversations for getting the metadata of conversations,
+            // then conversationUsers to know who is in the conversation.
+
+            ;(async () => {
+                const userConversationsOnce = await userConversationsRef
+                    .once('value')
+                const initialConversations: ClientConversation[] = []
+                if (!userConversationsOnce.exists()) {
+                    console.log(`${userConversationsRefString} userConversation ref does not exist.`)
+                    return
+                }
+
+                const cuPromises: Promise<firebase.database.DataSnapshot>[] = []
+                userConversationsOnce.forEach((uc) => {
+                    cuPromises.push(db.ref(`conversationUsers/${uc.key}`).once('value'))
+                })
+                const cuResolved = await Promise.all(cuPromises)
+
+                // Loop through each conversation the logged in user is a part of
+                // to create a ClientConversation for each conversation.
+                userConversationsOnce.forEach((uc) => {
+                    if (!uc.key) {
+                        return
+                    }
+                    const convo: ClientConversation = {
+                        id: uc.key,
+                        otherUsers: []
+                    }
+                    // Check if conversation keys match 
+                    const matchedConversationUsers = cuResolved.find(cur => cur.ref.key === uc.key)
+                    // Add other users to the ClientConversation.
+                    if (matchedConversationUsers) {
+                        matchedConversationUsers.forEach(conversationUser => {
+                            if (conversationUser.key && conversationUser.key !== userId) {
+                                convo.otherUsers.push({
+                                    id: conversationUser.key
+                                })
+                            }
+                        })
+                    }
+
+                    initialConversations.push(convo)
+                })
+
+                console.table(initialConversations)
+                
+                return
+                
+
+                // const lastInitialUserConversationId =
+                //     initialConversations.length > 0
+                //         ? initialConversations[initialConversations.length - 1].key
+                //         : null
+                // userConversationsRef
+                //     .orderByKey()
+                //     .startAfter(lastInitialUserConversationId)
+                //     .on('child_added', (userConversationSnapshot, previousChildKey) => {
+                //         const conversationValue = userConversationSnapshot.val()
+                //         setConversations((prev) => [...prev, conversationValue])
+                //         console.log(
+                //             `New conversation: ${JSON.stringify(conversationValue)}`
+                //         )
+                //     })
+            })()
+
+            return () => {
+                console.log('cleanup called userConversations')
+                userConversationsRef.off('child_added')
+            }
+        } catch(e) {
+            return
+        }
+    }, [initialized, userId])
 
     useEffect(() => {
         try {
@@ -40,7 +144,7 @@ export function useConversation(
                         `${messagesRefString} ref found! Initial messages set.`
                     )
                 } else {
-                    console.log(`${messagesRefString} ref does not exist.`)
+                    console.log(`${messagesRefString} message ref does not exist.`)
                     return
                 }
                 const lastInitialMessageId =
@@ -60,7 +164,7 @@ export function useConversation(
             })()
 
             return () => {
-                console.log('cleanup called')
+                console.log('cleanup called messages')
                 messagesRef.off('child_added')
             }
         } catch (e) {
@@ -68,7 +172,5 @@ export function useConversation(
         }
     }, [initialized, userId, conversationId])
 
-    console.log('rendered useConversation', messages)
-
-    return [messages, setMessages, setConversationId]
+    return {messages, setMessages, conversations, conversationId, setConversationId}
 }
