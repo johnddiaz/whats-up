@@ -33,8 +33,8 @@ export function useConversation(
 } {
     const [conversations, setConversations] = useState<ClientConversation[]>([])
     const [conversationId, setConversationId] = useState<string | null>(
-        // null
-        '-Mhq8wgUkPd0Qs0_cCqV'
+        null
+        // '-Mhq8wgUkPd0Qs0_cCqV'
     )
     const [messages, setMessages] = useState<ClientMessage[]>(
         []

@@ -111,7 +111,7 @@ function App(props: AppProps) {
         }
     }
 
-    async function handleSend(
+    async function createMessage(
         e: React.MouseEvent<HTMLInputElement, MouseEvent>
     ) {
         e.preventDefault()
@@ -179,7 +179,7 @@ function App(props: AppProps) {
                             // userId={props.user.uid}
                             currentDraft={currentDraft}
                             handleMessageChange={handleMessageChange}
-                            handleSend={handleSend}
+                            handleSend={createMessage}
                         />
                     </>
                 ) : (
