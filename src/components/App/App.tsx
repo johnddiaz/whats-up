@@ -37,6 +37,7 @@ function App(props: AppProps) {
     } = useConversation(appInitiated, props.user?.uid)
 
     const [currentDraft, setCurrentDraft] = React.useState('')
+    const [searchValue, setSearchValue] = React.useState('')
 
     function handlePreviewSelect(id: string) {
         setConversationId(id)
@@ -46,6 +47,11 @@ function App(props: AppProps) {
     function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         e.preventDefault()
         setCurrentDraft(e.target.value)
+    }
+
+    function handleSearchValueChange(e: React.ChangeEvent<HTMLInputElement>) {
+        e.preventDefault()
+        setSearchValue(e.target.value)
     }
 
     function makeNewMessageId(): number {
@@ -62,7 +68,7 @@ function App(props: AppProps) {
         return 0
     }
 
-    async function createConversation(friendId: string) {
+    async function createConversation(friendId: string, name: string) {
         if (!props.user) {
             console.error('not logged in')
             return
@@ -85,6 +91,7 @@ function App(props: AppProps) {
             await conversationRef.set({
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
                 creatorId: props.user.uid,
+                name: name,
             })
             console.log('Set successful')
 
@@ -149,18 +156,44 @@ function App(props: AppProps) {
             })
     }
 
+    function openConversationForm(
+        e: React.MouseEvent<HTMLInputElement, MouseEvent>
+    ) {
+        e.preventDefault()
+        setConversationId(null)
+    }
+
     return (
         <div id="app-root">
             <button onClick={logOut}>Log Out</button>
             <HomeLayout>
-                <HomeToolbar />
-                {conversations.map((convo) => (
-                    <ChatPreview
-                        key={convo.id}
-                        conversation={convo}
-                        onPreviewClick={handlePreviewSelect}
-                    />
-                ))}
+                <HomeToolbar
+                    searchValue={searchValue}
+                    handleSearchChange={handleSearchValueChange}
+                    openConversationForm={openConversationForm}
+                />
+                <div
+                    style={{
+                        overflow: 'scroll',
+                        borderBottom: '1px solid black',
+                        padding: '0px 4px 16px',
+                        height: '100%',
+                    }}
+                >
+                    {conversations
+                        .filter((convo) => {
+                            return (
+                                !searchValue || convo.name.includes(searchValue)
+                            )
+                        })
+                        .map((convo) => (
+                            <ChatPreview
+                                key={convo.id}
+                                conversation={convo}
+                                onPreviewClick={handlePreviewSelect}
+                            />
+                        ))}
+                </div>
             </HomeLayout>
             <InteractionLayout>
                 {/* Header */}

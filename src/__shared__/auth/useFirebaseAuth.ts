@@ -12,40 +12,60 @@ const config = {
     measurementId: 'G-K13ZDZ04JX',
 }
 
-function useFirebaseAuth(): [firebase.User | null, boolean, () => void] {
+function useFirebaseAuth(): [
+    firebase.User | null,
+    boolean,
+    (method: 'google' | 'github') => void
+] {
     const [user, setUser] = useLocalStorageState<firebase.User>('firebaseUser')
     const isLoggedIn = !!user
-    const [githubProvider, setGithubProvider] = useState<firebase.auth.GithubAuthProvider | null>(null)
+    const [
+        githubProvider,
+        setGithubProvider,
+    ] = useState<firebase.auth.GithubAuthProvider | null>(null)
+    const [
+        googleProvider,
+        setGoogleProvider,
+    ] = useState<firebase.auth.GoogleAuthProvider | null>(null)
 
-    function showSignInPopup() {
-        if (!githubProvider) {
+    function showSignInPopup(method: 'google' | 'github') {
+        let selectedProvider
+        if (method === 'github' && githubProvider) {
+            selectedProvider = githubProvider
+        } else if (method === 'google' && googleProvider) {
+            selectedProvider = googleProvider
+        } else {
             return
         }
 
         firebase
             .auth()
-            .signInWithPopup(githubProvider)
+            .signInWithPopup(selectedProvider)
             .catch((error) => {
                 console.error(`Unable to log in with error ${error}`)
             })
     }
 
     async function createUserInFirebaseIfNonexistent(user: firebase.User) {
-        const snapshot = await firebase.database().ref(`users/${user.uid}`).once('value')
+        const snapshot = await firebase
+            .database()
+            .ref(`users/${user.uid}`)
+            .once('value')
         if (!snapshot.val()) {
-            alert(`User ${user.uid} does not exist. Creating now.`)
+            console.log(`User ${user.uid} does not exist. Creating now.`)
             await firebase.database().ref(`users/${user.uid}`).set(true)
-            alert('Created new user.')
+            console.log('Created new user.')
         }
-        
     }
 
     useEffect(() => {
         if (firebase.apps.length === 0) {
             firebase.initializeApp(config)
         }
-        const provider = new firebase.auth.GithubAuthProvider()
-        setGithubProvider(provider)
+        const githubProvider = new firebase.auth.GithubAuthProvider()
+        const googleProvider = new firebase.auth.GoogleAuthProvider()
+        setGithubProvider(githubProvider)
+        setGoogleProvider(googleProvider)
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 // log in
@@ -57,8 +77,8 @@ function useFirebaseAuth(): [firebase.User | null, boolean, () => void] {
                 setUser(null)
                 console.log('logged out by useEffect')
             }
-          });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return [user, isLoggedIn, showSignInPopup]

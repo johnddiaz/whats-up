@@ -3,55 +3,65 @@ import { useState } from 'react'
 import './InteractionCreator.scss'
 
 interface Props {
-    createConversation: (friendId: string) => void
-}
-
-enum Phases {
-    START = 0,
-    FILL_OUT = 1,
+    createConversation: (friendId: string, name: string) => void
 }
 
 function InteractionCreator(props: Props) {
-    const [phase, setPhase] = useState(Phases.START)
+    const [conversationName, setConversationName] = useState('')
     const [friendId, setFriendId] = useState('')
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        props.createConversation(friendId)
-    }
-
-    function renderContent() {
-        switch (phase) {
-            case Phases.START: {
-                return (
-                    <h2
-                        id="InteractionCreator-starttext"
-                        onClick={() => setPhase((prev) => prev + 1)}
-                    >
-                        {'Click here to create a new conversation'}
-                    </h2>
-                )
-            }
-            case Phases.FILL_OUT: {
-                return (
-                    <>
-                        <label htmlFor="friend-name-input">Friend name</label>
-                        <input
-                            id="friend-name-input"
-                            type="text"
-                            value={friendId}
-                            onChange={(e) => setFriendId(e.currentTarget.value)}
-                        ></input>
-                        <input type="submit" value="Start conversation"></input>
-                    </>
-                )
-            }
-        }
+        props.createConversation(friendId, conversationName)
     }
 
     return (
         <div id="InteractionCreator-root">
-            <form onSubmit={handleSubmit}>{renderContent()}</form>
+            <form
+                onSubmit={handleSubmit}
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '8px',
+                }}
+            >
+                <div style={{ display: 'flex', padding: '4px' }}>
+                    <label
+                        htmlFor="conversation-name-input"
+                        style={{ flexGrow: 1, marginRight: '8px' }}
+                    >
+                        Conversation Name
+                    </label>
+                    <input
+                        id="conversation-name-input"
+                        type="text"
+                        value={conversationName}
+                        onChange={(e) =>
+                            setConversationName(e.currentTarget.value)
+                        }
+                    ></input>
+                </div>
+                <div style={{ display: 'flex', padding: '4px' }}>
+                    <label
+                        htmlFor="friend-name-input"
+                        style={{ flexGrow: 1, marginRight: '8px' }}
+                    >
+                        Friend ID
+                    </label>
+                    <input
+                        id="friend-name-input"
+                        type="text"
+                        value={friendId}
+                        onChange={(e) => setFriendId(e.currentTarget.value)}
+                    ></input>
+                </div>
+
+                <input
+                    type="submit"
+                    value="Start conversation"
+                    style={{ margin: '4px' }}
+                ></input>
+            </form>
         </div>
     )
 }

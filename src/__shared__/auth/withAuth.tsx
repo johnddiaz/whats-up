@@ -8,7 +8,29 @@ function withAuth(WrappedComponent: React.ElementType) {
         return isLoggedIn ? (
             <WrappedComponent user={user} {...props} />
         ) : (
-            <button onClick={showSignInPopup}>Sign in</button>
+            // This should probably be moved to a different component.
+            <div
+                style={{
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                }}
+            >
+                <button
+                    style={{ margin: '4px' }}
+                    onClick={() => showSignInPopup('google')}
+                >
+                    Sign in with Google
+                </button>
+                <button
+                    style={{ margin: '4px' }}
+                    onClick={() => showSignInPopup('github')}
+                >
+                    Sign in with Github
+                </button>
+            </div>
         )
     }
 }

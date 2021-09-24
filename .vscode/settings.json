@@ -1,5 +1,17 @@
 {
     "workbench.tree.indent": 24,
     "editor.linkedEditing": true,
-    "gitlens.advanced.fileHistoryFollowsRenames": true
+    "gitlens.advanced.fileHistoryFollowsRenames": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    }
 }
