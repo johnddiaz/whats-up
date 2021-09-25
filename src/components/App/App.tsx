@@ -234,7 +234,7 @@ function App(props: AppProps) {
                     ) : (
                         <InteractionCreator
                             createConversation={createConversation}
-                            back={back}
+                            back={windowSize === 'xs' ? back : undefined}
                         />
                     )}
                 </InteractionLayout>

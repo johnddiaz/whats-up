@@ -4,7 +4,7 @@ import './InteractionCreator.scss'
 
 interface Props {
     createConversation: (friendId: string, name: string) => void
-    back: () => void
+    back: (() => void) | undefined
 }
 
 function InteractionCreator(props: Props) {
@@ -18,9 +18,11 @@ function InteractionCreator(props: Props) {
 
     return (
         <div id="InteractionCreator-root">
-            <button onClick={props.back} style={{ padding: '8px' }}>
-                X
-            </button>
+            {props.back && (
+                <button onClick={props.back} style={{ padding: '8px' }}>
+                    X
+                </button>
+            )}
             <div
                 style={{
                     display: 'flex',
