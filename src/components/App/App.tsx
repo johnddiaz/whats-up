@@ -21,6 +21,8 @@ import {
     ClientMessage,
     useConversation,
 } from '../../__shared__/hooks/useConversation'
+import { useWindowSize } from '../../__shared__/hooks/useWindowSize'
+import InteractionBar from '../InteractionBar'
 
 interface AppProps {
     user: firebase.User | null
@@ -30,7 +32,6 @@ function App(props: AppProps) {
     const appInitiated = firebase.apps.length > 0
     const {
         messages,
-        setMessages,
         conversations,
         conversationId,
         setConversationId,
@@ -38,6 +39,10 @@ function App(props: AppProps) {
 
     const [currentDraft, setCurrentDraft] = React.useState('')
     const [searchValue, setSearchValue] = React.useState('')
+    const windowSize = useWindowSize()
+    const [showConversationForm, setShowConversationForm] = React.useState(
+        false
+    )
 
     function handlePreviewSelect(id: string) {
         setConversationId(id)
@@ -52,20 +57,6 @@ function App(props: AppProps) {
     function handleSearchValueChange(e: React.ChangeEvent<HTMLInputElement>) {
         e.preventDefault()
         setSearchValue(e.target.value)
-    }
-
-    function makeNewMessageId(): number {
-        // let lastId: number
-
-        // if (newMessages.length === 0) {
-        //     const messages = currentConversation?.messages
-        //     lastId = messages ? messages[messages.length - 1].id : 0
-        // } else {
-        //     lastId = newMessages[newMessages.length - 1].id
-        // }
-
-        // return lastId + 1
-        return 0
     }
 
     async function createConversation(friendId: string, name: string) {
@@ -161,66 +152,93 @@ function App(props: AppProps) {
     ) {
         e.preventDefault()
         setConversationId(null)
+        setShowConversationForm(true)
+    }
+
+    console.log(windowSize)
+
+    const showInteractionLayout =
+        windowSize !== 'xs' ||
+        (windowSize === 'xs' && (conversationId || showConversationForm))
+    const showHomeLayout =
+        windowSize !== 'xs' ||
+        (windowSize === 'xs' && !conversationId && !showConversationForm)
+    const currentConversation =
+        conversationId &&
+        (conversations.find(
+            (c) => c.id === conversationId
+        ) as ClientConversation)
+    const back = () => {
+        setConversationId(null)
+        setShowConversationForm(false)
     }
 
     return (
         <div id="app-root">
-            <button onClick={logOut}>Log Out</button>
-            <HomeLayout>
-                <HomeToolbar
-                    searchValue={searchValue}
-                    handleSearchChange={handleSearchValueChange}
-                    openConversationForm={openConversationForm}
-                />
-                <div
-                    style={{
-                        overflow: 'scroll',
-                        borderBottom: '1px solid black',
-                        padding: '0px 4px 16px',
-                        height: '100%',
-                    }}
-                >
-                    {conversations
-                        .filter((convo) => {
-                            return (
-                                !searchValue || convo.name.includes(searchValue)
-                            )
-                        })
-                        .map((convo) => (
-                            <ChatPreview
-                                key={convo.id}
-                                conversation={convo}
-                                onPreviewClick={handlePreviewSelect}
-                            />
-                        ))}
-                </div>
-            </HomeLayout>
-            <InteractionLayout>
-                {/* Header */}
-                {conversationId && props.user ? (
-                    <>
-                        <Interaction
-                            userId={props.user.uid}
-                            conversation={
-                                conversations.find(
-                                    (c) => c.id === conversationId
-                                ) as ClientConversation
-                            }
-                            messages={messages}
-                        />
-                        <InteractionMessageEditor
-                            // userId={props.user.uid}
-                            currentDraft={currentDraft}
-                            handleMessageChange={handleMessageChange}
-                            handleSend={createMessage}
-                        />
-                    </>
-                ) : (
-                    <InteractionCreator
-                        createConversation={createConversation}
+            {showHomeLayout && (
+                <HomeLayout>
+                    <HomeToolbar
+                        searchValue={searchValue}
+                        handleSearchChange={handleSearchValueChange}
+                        openConversationForm={openConversationForm}
                     />
-                )}
-            </InteractionLayout>
+                    <div
+                        style={{
+                            overflow: 'scroll',
+                            borderBottom: '1px solid black',
+                            padding: '0px 4px 16px',
+                            height: '100%',
+                        }}
+                    >
+                        {conversations
+                            .filter((convo) => {
+                                return (
+                                    !searchValue ||
+                                    convo.name.includes(searchValue)
+                                )
+                            })
+                            .map((convo) => (
+                                <ChatPreview
+                                    key={convo.id}
+                                    conversation={convo}
+                                    onPreviewClick={handlePreviewSelect}
+                                />
+                            ))}
+                    </div>
+                    <button onClick={logOut}>Log Out</button>
+                </HomeLayout>
+            )}
+
+            {showInteractionLayout && (
+                <InteractionLayout>
+                    {currentConversation && props.user ? (
+                        <>
+                            <InteractionBar
+                                backIcon={windowSize === 'xs' ? '<' : 'X'}
+                                back={back}
+                                conversation={currentConversation}
+                            />
+                            <div style={{ height: '16px' }}></div>
+                            <Interaction
+                                userId={props.user.uid}
+                                conversation={currentConversation}
+                                messages={messages}
+                            />
+                            <InteractionMessageEditor
+                                // userId={props.user.uid}
+                                currentDraft={currentDraft}
+                                handleMessageChange={handleMessageChange}
+                                handleSend={createMessage}
+                            />
+                        </>
+                    ) : (
+                        <InteractionCreator
+                            createConversation={createConversation}
+                            back={back}
+                        />
+                    )}
+                </InteractionLayout>
+            )}
         </div>
     )
 }

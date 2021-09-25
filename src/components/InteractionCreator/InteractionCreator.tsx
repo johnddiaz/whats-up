@@ -4,6 +4,7 @@ import './InteractionCreator.scss'
 
 interface Props {
     createConversation: (friendId: string, name: string) => void
+    back: () => void
 }
 
 function InteractionCreator(props: Props) {
@@ -17,51 +18,63 @@ function InteractionCreator(props: Props) {
 
     return (
         <div id="InteractionCreator-root">
-            <form
-                onSubmit={handleSubmit}
+            <button onClick={props.back} style={{ padding: '8px' }}>
+                X
+            </button>
+            <div
                 style={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    padding: '8px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '90%',
                 }}
             >
-                <div style={{ display: 'flex', padding: '4px' }}>
-                    <label
-                        htmlFor="conversation-name-input"
-                        style={{ flexGrow: 1, marginRight: '8px' }}
-                    >
-                        Conversation Name
-                    </label>
-                    <input
-                        id="conversation-name-input"
-                        type="text"
-                        value={conversationName}
-                        onChange={(e) =>
-                            setConversationName(e.currentTarget.value)
-                        }
-                    ></input>
-                </div>
-                <div style={{ display: 'flex', padding: '4px' }}>
-                    <label
-                        htmlFor="friend-name-input"
-                        style={{ flexGrow: 1, marginRight: '8px' }}
-                    >
-                        Friend ID
-                    </label>
-                    <input
-                        id="friend-name-input"
-                        type="text"
-                        value={friendId}
-                        onChange={(e) => setFriendId(e.currentTarget.value)}
-                    ></input>
-                </div>
+                <form
+                    onSubmit={handleSubmit}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: '8px',
+                    }}
+                >
+                    <div style={{ display: 'flex', padding: '4px' }}>
+                        <label
+                            htmlFor="conversation-name-input"
+                            style={{ flexGrow: 1, marginRight: '8px' }}
+                        >
+                            Conversation Name
+                        </label>
+                        <input
+                            id="conversation-name-input"
+                            type="text"
+                            value={conversationName}
+                            onChange={(e) =>
+                                setConversationName(e.currentTarget.value)
+                            }
+                        ></input>
+                    </div>
+                    <div style={{ display: 'flex', padding: '4px' }}>
+                        <label
+                            htmlFor="friend-name-input"
+                            style={{ flexGrow: 1, marginRight: '8px' }}
+                        >
+                            Friend ID
+                        </label>
+                        <input
+                            id="friend-name-input"
+                            type="text"
+                            value={friendId}
+                            onChange={(e) => setFriendId(e.currentTarget.value)}
+                        ></input>
+                    </div>
 
-                <input
-                    type="submit"
-                    value="Start conversation"
-                    style={{ margin: '4px' }}
-                ></input>
-            </form>
+                    <input
+                        type="submit"
+                        value="Start conversation"
+                        style={{ margin: '4px' }}
+                    ></input>
+                </form>
+            </div>
         </div>
     )
 }

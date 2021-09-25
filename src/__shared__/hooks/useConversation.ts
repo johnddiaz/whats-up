@@ -27,7 +27,6 @@ export function useConversation(
     userId?: string
 ): {
     messages: ClientMessage[]
-    setMessages: React.Dispatch<React.SetStateAction<ClientMessage[]>>
     conversations: ClientConversation[]
     conversationId: string | null
     setConversationId: React.Dispatch<React.SetStateAction<string | null>>
@@ -278,7 +277,6 @@ export function useConversation(
 
     return {
         messages,
-        setMessages,
         conversations,
         conversationId,
         setConversationId,
