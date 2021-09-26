@@ -91,13 +91,24 @@ function App(props: AppProps) {
             // For self
             everythingElse[
                 `userConversations/${props.user.uid}/${conversationId}`
-            ] = true
+            ] = {
+                invitedBy: props.user.uid,
+            }
             everythingElse[
                 `conversationUsers/${conversationId}/${props.user.uid}`
-            ] = true
+            ] = {
+                invitedBy: props.user.uid,
+            }
 
             // For friend
-            everythingElse[`userInvitations/${conversationId}/${friendId}`] = {
+            everythingElse[
+                `userConversations/${friendId}/${conversationId}`
+            ] = {
+                invitedBy: props.user.uid,
+            }
+            everythingElse[
+                `conversationUsers/${conversationId}/${friendId}`
+            ] = {
                 invitedBy: props.user.uid,
             }
 
