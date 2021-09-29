@@ -39,7 +39,6 @@ function ChatPreview(props: Props) {
                           )
                         : 'No other users here.'}
                 </h5>
-                <p style={{ margin: '0' }}>Last message would go here.</p>
             </div>
         </div>
     )
