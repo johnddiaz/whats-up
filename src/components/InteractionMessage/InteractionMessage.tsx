@@ -1,7 +1,6 @@
 import * as React from 'react'
+import { ClientMessage } from '../../__shared__/models'
 import './InteractionMessage.scss'
-import { Message, Person } from '../../__shared__/api-responses/conversations'
-import { ClientMessage } from '../../__shared__/hooks/useConversation'
 
 export interface InteractionMessageProps {
     userId: string

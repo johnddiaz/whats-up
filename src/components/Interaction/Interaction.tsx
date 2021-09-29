@@ -1,15 +1,7 @@
 import * as React from 'react'
 import './Interaction.scss'
-import {
-    Conversation,
-    john,
-    Message,
-} from '../../__shared__/api-responses/conversations'
 import InteractionMessage from '../InteractionMessage'
-import {
-    ClientConversation,
-    ClientMessage,
-} from '../../__shared__/hooks/useConversation'
+import { ClientConversation, ClientMessage } from '../../__shared__/models'
 
 interface InteractionProps {
     userId: string

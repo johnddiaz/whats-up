@@ -1,29 +1,19 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './styles.scss'
 import '../../__shared__/styles.scss'
 import ChatPreview from '../ChatPreview'
 import HomeToolbar from '../ChatsToolbar'
-import {
-    Conversation,
-    // conversations,
-    john,
-    Message,
-} from '../../__shared__/api-responses/conversations'
 import Interaction from '../Interaction'
 import InteractionMessageEditor from '../InteractionMessageEditor'
 import { ChatsLayout as HomeLayout, InteractionLayout } from './layouts'
 import withAuth from '../../__shared__/auth/withAuth'
 import firebase from 'firebase'
 import InteractionCreator from '../InteractionCreator'
-import { useEffect } from 'react'
-import {
-    ClientConversation,
-    ClientMessage,
-    useConversation,
-} from '../../__shared__/hooks/useConversation'
+import { useConversation } from '../../__shared__/hooks/useConversation'
 import { useWindowSize } from '../../__shared__/hooks/useWindowSize'
 import InteractionBar from '../InteractionBar'
 import { UserSettings } from '../UserSettings'
+import { ClientConversation } from '../../__shared__/models'
 
 interface AppProps {
     user: firebase.User | null

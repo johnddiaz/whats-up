@@ -1,9 +1,7 @@
 import * as React from 'react'
 import './ChatPreview.scss'
 import '../../__shared__/styles.scss'
-import Avatar from '../Avatar'
-import { Conversation } from '../../__shared__/api-responses/conversations'
-import { ClientConversation } from '../../__shared__/hooks/useConversation'
+import { ClientConversation } from '../../__shared__/models'
 
 interface Props {
     conversation: ClientConversation

@@ -1,6 +1,5 @@
 import firebase from 'firebase'
 import { useEffect, useState } from 'react'
-import { getRandomInt } from '../utils/math'
 import useLocalStorageState from '../utils/useLocalStorageState'
 
 const config = {
@@ -13,13 +12,11 @@ const config = {
     measurementId: 'G-K13ZDZ04JX',
 }
 
-function useFirebaseAuth(): [
+export default function useFirebaseAuth(): [
     firebase.User | null,
-    boolean,
     (method: 'google' | 'github') => void
 ] {
     const [user, setUser] = useLocalStorageState<firebase.User>('firebaseUser')
-    const isLoggedIn = !!user
     const [
         githubProvider,
         setGithubProvider,
@@ -90,7 +87,5 @@ function useFirebaseAuth(): [
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    return [user, isLoggedIn, showSignInPopup]
+    return [user, showSignInPopup]
 }
-
-export default useFirebaseAuth
