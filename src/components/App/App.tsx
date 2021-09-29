@@ -23,6 +23,7 @@ import {
 } from '../../__shared__/hooks/useConversation'
 import { useWindowSize } from '../../__shared__/hooks/useWindowSize'
 import InteractionBar from '../InteractionBar'
+import { UserSettings } from '../UserSettings'
 
 interface AppProps {
     user: firebase.User | null
@@ -43,8 +44,11 @@ function App(props: AppProps) {
     const [showConversationForm, setShowConversationForm] = React.useState(
         false
     )
+    const [showUserSettings, setShowUserSettings] = React.useState(false)
 
     function handlePreviewSelect(id: string) {
+        setShowConversationForm(false)
+        setShowUserSettings(false)
         setConversationId(id)
         console.log('conversation id changed to ', id)
     }
@@ -69,8 +73,10 @@ function App(props: AppProps) {
             const db = firebase.database()
 
             // Check if friendId is valid
-            const snapshot = await db.ref(`users/${friendId}`).once('value')
-            if (!snapshot.val()) {
+            const friendSnapshot = await db
+                .ref(`users/${friendId}`)
+                .once('value')
+            if (!friendSnapshot.val()) {
                 alert(`Friend ID ${friendId} does not exist.`)
                 return
             }
@@ -98,6 +104,7 @@ function App(props: AppProps) {
                 `conversationUsers/${conversationId}/${props.user.uid}`
             ] = {
                 invitedBy: props.user.uid,
+                userName: props.user.displayName,
             }
 
             // For friend
@@ -110,11 +117,14 @@ function App(props: AppProps) {
                 `conversationUsers/${conversationId}/${friendId}`
             ] = {
                 invitedBy: props.user.uid,
+                userName: friendSnapshot.child('userName').val() || '',
             }
 
             await db.ref().update(everythingElse)
 
             setConversationId(conversationId)
+            setShowConversationForm(false)
+            setShowUserSettings(false)
         } catch (outerError) {
             alert(`something went wrong: ${outerError}`)
         }
@@ -132,8 +142,10 @@ function App(props: AppProps) {
 
         const message = {
             sender: props.user.uid,
+            senderName: props.user.displayName || '',
             createdAt: firebase.database.ServerValue.TIMESTAMP,
             content: currentDraft,
+            photoURL: props.user.photoURL,
         }
 
         const newMessageRef = await firebase
@@ -163,17 +175,42 @@ function App(props: AppProps) {
     ) {
         e.preventDefault()
         setConversationId(null)
+        setShowUserSettings(false)
         setShowConversationForm(true)
     }
 
-    console.log(windowSize)
+    function openUserSettings(
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) {
+        e.preventDefault()
+        setConversationId(null)
+        setShowConversationForm(false)
+        setShowUserSettings(true)
+    }
+
+    function updateUserProfile(
+        userInfo: Partial<Pick<firebase.UserInfo, 'displayName' | 'photoURL'>>
+    ) {
+        props.user
+            ?.updateProfile(userInfo)
+            .then(() => {
+                console.log('user profile updated successfully')
+            })
+            .catch((error) => {
+                console.error(`user profile not updated with error ${error}`)
+            })
+    }
 
     const showInteractionLayout =
         windowSize !== 'xs' ||
-        (windowSize === 'xs' && (conversationId || showConversationForm))
+        (windowSize === 'xs' &&
+            (conversationId || showConversationForm || showUserSettings))
     const showHomeLayout =
         windowSize !== 'xs' ||
-        (windowSize === 'xs' && !conversationId && !showConversationForm)
+        (windowSize === 'xs' &&
+            !conversationId &&
+            !showConversationForm &&
+            !showUserSettings)
     const currentConversation =
         conversationId &&
         (conversations.find(
@@ -182,6 +219,7 @@ function App(props: AppProps) {
     const back = () => {
         setConversationId(null)
         setShowConversationForm(false)
+        setShowUserSettings(false)
     }
 
     return (
@@ -216,6 +254,9 @@ function App(props: AppProps) {
                                 />
                             ))}
                     </div>
+                    <button onClick={openUserSettings}>
+                        Edit User Settings
+                    </button>
                     <button onClick={logOut}>Log Out</button>
                 </HomeLayout>
             )}
@@ -242,12 +283,17 @@ function App(props: AppProps) {
                                 handleSend={createMessage}
                             />
                         </>
-                    ) : (
+                    ) : showConversationForm ? (
                         <InteractionCreator
                             createConversation={createConversation}
                             back={windowSize === 'xs' ? back : undefined}
                         />
-                    )}
+                    ) : showUserSettings ? (
+                        <UserSettings
+                            displayName={props.user?.displayName || ''}
+                            updateProfile={updateUserProfile}
+                        />
+                    ) : null}
                 </InteractionLayout>
             )}
         </div>

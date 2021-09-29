@@ -15,9 +15,10 @@ function ChatPreview(props: Props) {
         props.onPreviewClick(props.conversation.id)
     }
 
+    console.log(props.conversation)
+
     return (
         <div id="chatpreview-root" onClick={onPreviewClick}>
-            <Avatar size="sm" />
             <div id="chatpreview-text-root">
                 <h4 style={{ margin: '0 0 8px' }}>
                     {props.conversation.name || props.conversation.id}
@@ -30,9 +31,9 @@ function ChatPreview(props: Props) {
                                       original.length === 1 ||
                                       index === original.length - 1
                                   ) {
-                                      return user.id
+                                      return user.userName || user.id
                                   } else {
-                                      return `${user.id}, `
+                                      return `${user.userName || user.id}, `
                                   }
                               }
                           )

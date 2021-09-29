@@ -1,5 +1,6 @@
 import firebase from 'firebase'
 import { useEffect, useState } from 'react'
+import { getRandomInt } from '../utils/math'
 import useLocalStorageState from '../utils/useLocalStorageState'
 
 const config = {
@@ -51,9 +52,17 @@ function useFirebaseAuth(): [
             .database()
             .ref(`users/${user.uid}`)
             .once('value')
-        if (!snapshot.val()) {
+        if (snapshot.val()) {
+            await firebase.database().ref(`users/${user.uid}`).update({
+                userName: user.displayName,
+                photoURL: user.photoURL,
+            })
+        } else {
             console.log(`User ${user.uid} does not exist. Creating now.`)
-            await firebase.database().ref(`users/${user.uid}`).set(true)
+            await firebase.database().ref(`users/${user.uid}`).set({
+                userName: user.displayName,
+                photoURL: user.photoURL,
+            })
             console.log('Created new user.')
         }
     }

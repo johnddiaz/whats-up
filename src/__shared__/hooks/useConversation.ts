@@ -4,7 +4,9 @@ import firebase from 'firebase'
 export interface ServerMessage {
     content: string
     sender?: string
+    senderName?: string
     createdAt?: string
+    photoURL?: string
 }
 
 export interface ClientMessage extends ServerMessage {
@@ -13,7 +15,7 @@ export interface ClientMessage extends ServerMessage {
 
 interface ClientUser {
     id: string
-    name?: string
+    userName?: string
 }
 
 export interface ClientConversation {
@@ -48,6 +50,7 @@ export function useConversation(
 
             const userConversationsRefString = `userConversations/${userId}`
             const userConversationsRef = db.ref(userConversationsRefString)
+            const usersRef = db.ref('users')
 
             // What I need to do next is display a list of conversations in the UI that the user has access to.
             // I need to use a combination of userConversations and conversations.
@@ -122,6 +125,9 @@ export function useConversation(
                                     ) {
                                         convo.otherUsers.push({
                                             id: conversationUser.key,
+                                            userName: conversationUser
+                                                .child('userName')
+                                                .val(),
                                         })
                                     }
                                 }
@@ -179,6 +185,11 @@ export function useConversation(
                                                             convo.otherUsers.push(
                                                                 {
                                                                     id: ncu.key,
+                                                                    userName: ncu
+                                                                        .child(
+                                                                            'userName'
+                                                                        )
+                                                                        .val(),
                                                                 }
                                                             )
                                                         }
