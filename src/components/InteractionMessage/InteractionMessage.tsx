@@ -9,13 +9,12 @@ export interface InteractionMessageProps {
     placementClass?: string
 }
 
-function InteractionMessage(props: InteractionMessageProps) {
+export default function InteractionMessage(props: InteractionMessageProps) {
     const isSender = props.userId && props.userId === props.message.sender
     const personClass = isSender
         ? 'interactionmessage-self'
         : 'interactionmessage-friend'
     const placementClass = props.placementClass ? props.placementClass : ''
-    console.log(props.message.createdAt)
 
     return (
         <div
@@ -54,20 +53,16 @@ function InteractionMessage(props: InteractionMessageProps) {
                     {props.message.content}
                 </p>
             </div>
-            {props.message.createdAt && (
-                <p
-                    style={{
-                        marginTop: '4px',
-                        textAlign: isSender ? 'right' : 'left',
-                        ...(!isSender ? { marginLeft: '56px' } : null),
-                        fontSize: '10px',
-                    }}
-                >
-                    {new Date(props.message.createdAt).toLocaleString()}
-                </p>
-            )}
+            <p
+                style={{
+                    marginTop: '4px',
+                    textAlign: isSender ? 'right' : 'left',
+                    ...(!isSender ? { marginLeft: '56px' } : null),
+                    fontSize: '10px',
+                }}
+            >
+                {new Date(props.message.createdAt).toLocaleString()}
+            </p>
         </div>
     )
 }
-
-export default InteractionMessage

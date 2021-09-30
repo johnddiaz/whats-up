@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import firebase from 'firebase'
 import { ClientConversation, ClientMessage, ServerMessage } from '../models'
 
+/**
+ * The primary hook of the app. Fetches and listens to conversation and message data
+ */
 export function useConversation(
     initialized: boolean,
     userId?: string
@@ -12,12 +15,13 @@ export function useConversation(
     setConversationId: React.Dispatch<React.SetStateAction<string | null>>
 } {
     const [conversations, setConversations] = useState<ClientConversation[]>([])
-    const [conversationId, setConversationId] = useState<string | null>(
-        null
-        // '-Mhq8wgUkPd0Qs0_cCqV'
-    )
+    const [conversationId, setConversationId] = useState<string | null>(null)
     const [messages, setMessages] = useState<ClientMessage[]>([])
 
+    /**
+     * Pull conversations, userConversations, and conversationUsers.
+     * Also listens to new conversations.
+     */
     useEffect(() => {
         try {
             if (!initialized || !userId) {
@@ -84,11 +88,6 @@ export function useConversation(
 
                         // Add name to convo
                         if (matchedConversation) {
-                            console.log(
-                                'matchedConvo',
-                                matchedConversation,
-                                matchedConversation.val()
-                            )
                             convo.name = matchedConversation.val().name
                         }
 
@@ -114,7 +113,7 @@ export function useConversation(
                         initialConversations.push(convo)
                     })
 
-                    setConversations((prev) => initialConversations)
+                    setConversations(initialConversations)
 
                     lastInitialUserConversationId =
                         initialConversations.length > 0
@@ -125,9 +124,6 @@ export function useConversation(
                 } else {
                     setConversations([])
                     setConversationId(null)
-                    console.log(
-                        `${userConversationsRefString} userConversation ref does not exist.`
-                    )
                 }
 
                 userConversationsRef
@@ -138,70 +134,68 @@ export function useConversation(
                         (userConversationSnapshot, previousChildKey) => {
                             // userConversationSnapshot.key is a new conversation key
                             const ucKey = userConversationSnapshot.key
-                            if (ucKey) {
-                                const convo: ClientConversation = {
-                                    id: ucKey,
-                                    otherUsers: [],
-                                    name: '',
-                                }
-                                db.ref(`conversations/${ucKey}`)
-                                    .orderByKey()
-                                    .once('value')
-                                    .then((conversation) => {
-                                        convo.name = conversation.val().name
-                                        db.ref(`conversationUsers/${ucKey}`)
-                                            .orderByKey()
-                                            .once('value')
-                                            .then((newConversationUsers) => {
-                                                newConversationUsers.forEach(
-                                                    (ncu) => {
-                                                        if (
-                                                            ncu.key &&
-                                                            ncu.key !== userId
-                                                        ) {
-                                                            convo.otherUsers.push(
-                                                                {
-                                                                    id: ncu.key,
-                                                                    userName: ncu
-                                                                        .child(
-                                                                            'userName'
-                                                                        )
-                                                                        .val(),
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                )
-                                                setConversations((prev) => [
-                                                    ...prev,
-                                                    convo,
-                                                ])
-                                                console.log(
-                                                    `New conversation: ${JSON.stringify(
-                                                        convo
-                                                    )}`
-                                                )
-                                            })
-                                    })
+                            if (!ucKey) {
+                                return
                             }
+                            const convo: ClientConversation = {
+                                id: ucKey,
+                                otherUsers: [],
+                                name: '',
+                            }
+                            db.ref(`conversations/${ucKey}`)
+                                .orderByKey()
+                                .once('value')
+                                .then((conversation) => {
+                                    convo.name = conversation.val().name
+                                    db.ref(`conversationUsers/${ucKey}`)
+                                        .orderByKey()
+                                        .once('value')
+                                        .then((newConversationUsers) => {
+                                            newConversationUsers.forEach(
+                                                (ncu) => {
+                                                    if (
+                                                        ncu.key &&
+                                                        ncu.key !== userId
+                                                    ) {
+                                                        convo.otherUsers.push({
+                                                            id: ncu.key,
+                                                            userName: ncu
+                                                                .child(
+                                                                    'userName'
+                                                                )
+                                                                .val(),
+                                                        })
+                                                    }
+                                                }
+                                            )
+                                            setConversations((prev) => [
+                                                ...prev,
+                                                convo,
+                                            ])
+                                        })
+                                })
                         }
                     )
             })()
 
             return () => {
-                console.log('cleanup called userConversations')
                 userConversationsRef.off('child_added')
             }
         } catch (e) {
+            console.error(e)
             return
         }
     }, [initialized, userId])
 
+    /**
+     * Pulls messages, and listens to new ones.
+     */
     useEffect(() => {
         try {
             if (!initialized || !userId || !conversationId) {
                 return
             }
+
             const db = firebase.database()
             const messagesRefString = `messages/${conversationId}`
             const messagesRef = db.ref(messagesRefString)
@@ -211,7 +205,7 @@ export function useConversation(
                     .orderByKey()
                     .once('value')
                 const initialMessages: ClientMessage[] = []
-                // This if else may not really be necessary.
+
                 if (messagesOnce.exists()) {
                     messagesOnce.forEach((m) => {
                         if (m.key) {
@@ -223,15 +217,10 @@ export function useConversation(
                         }
                     })
                     setMessages(initialMessages)
-                    console.log(
-                        `${messagesRefString} ref found! Initial messages set.`
-                    )
                 } else {
-                    console.log(
-                        `${messagesRefString} message ref does not exist.`
-                    )
                     setMessages([])
                 }
+
                 const lastInitialMessageId: string =
                     initialMessages.length > 0
                         ? initialMessages[initialMessages.length - 1].id
@@ -247,19 +236,15 @@ export function useConversation(
                                 id: messageSnapshot.key,
                             }
                             setMessages((prev) => [...prev, clientMessage])
-                            console.log(
-                                `New message ${messageSnapshot.key}: ${clientMessage}`
-                            )
                         }
                     })
             })()
 
             return () => {
-                console.log('cleanup called messages')
                 messagesRef.off('child_added')
             }
         } catch (e) {
-            console.log('whoops', e)
+            console.error(e)
         }
     }, [initialized, userId, conversationId])
 

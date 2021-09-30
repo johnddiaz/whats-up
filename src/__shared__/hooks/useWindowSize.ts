@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 export type WindowSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-// https://usehooks.com/useWindowSize/
+// Initially based on https://usehooks.com/useWindowSize/
 export function useWindowSize(): WindowSize | undefined {
     const [windowSize, setWindowSize] = useState<WindowSize | undefined>()
 

@@ -3,13 +3,13 @@ import './Interaction.scss'
 import InteractionMessage from '../InteractionMessage'
 import { ClientConversation, ClientMessage } from '../../__shared__/models'
 
-interface InteractionProps {
+interface Props {
     userId: string
     conversation: ClientConversation
     messages: ClientMessage[]
 }
 
-function Interaction(props: InteractionProps) {
+export default function Interaction(props: Props) {
     const newestMessageRef = React.useRef<HTMLDivElement | null>(null)
 
     React.useEffect(() => {
@@ -43,5 +43,4 @@ function Interaction(props: InteractionProps) {
     )
 }
 
-export default Interaction
-export type { InteractionProps }
+export type { Props as InteractionProps }

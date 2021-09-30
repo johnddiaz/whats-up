@@ -1,8 +1,8 @@
 export interface ServerMessage {
     content: string
-    sender?: string
-    senderName?: string
-    createdAt?: string
+    sender: string
+    senderName: string
+    createdAt: string
     photoURL?: string
 }
 
@@ -12,7 +12,7 @@ export interface ClientMessage extends ServerMessage {
 
 interface ClientUser {
     id: string
-    userName?: string
+    userName: string
 }
 
 export interface ClientConversation {

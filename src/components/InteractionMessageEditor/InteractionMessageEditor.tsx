@@ -7,7 +7,7 @@ interface Props {
     handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>): void
 }
 
-function InteractionMessageEditor(props: Props) {
+export default function InteractionMessageEditor(props: Props) {
     return (
         <div id="interactionmessageeditor-root">
             <textarea
@@ -18,5 +18,3 @@ function InteractionMessageEditor(props: Props) {
         </div>
     )
 }
-
-export default InteractionMessageEditor

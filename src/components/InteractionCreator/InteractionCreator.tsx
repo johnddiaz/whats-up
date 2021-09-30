@@ -7,7 +7,7 @@ interface Props {
     back: (() => void) | undefined
 }
 
-function InteractionCreator(props: Props) {
+export default function InteractionCreator(props: Props) {
     const [conversationName, setConversationName] = useState('')
     const [friendId, setFriendId] = useState('')
 
@@ -81,5 +81,4 @@ function InteractionCreator(props: Props) {
     )
 }
 
-export default InteractionCreator
 export type { Props as InteractionCreatorProps }

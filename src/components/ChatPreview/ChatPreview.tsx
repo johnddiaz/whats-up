@@ -8,12 +8,10 @@ interface Props {
     onPreviewClick: (id: string) => void
 }
 
-function ChatPreview(props: Props) {
+export default function ChatPreview(props: Props) {
     function onPreviewClick() {
         props.onPreviewClick(props.conversation.id)
     }
-
-    console.log(props.conversation)
 
     return (
         <div id="chatpreview-root" onClick={onPreviewClick}>
@@ -41,5 +39,3 @@ function ChatPreview(props: Props) {
         </div>
     )
 }
-
-export default ChatPreview

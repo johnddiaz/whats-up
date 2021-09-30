@@ -14,6 +14,24 @@ import { useWindowSize } from '../../__shared__/hooks/useWindowSize'
 import InteractionBar from '../InteractionBar'
 import { UserSettings } from '../UserSettings'
 import { ClientConversation } from '../../__shared__/models'
+import {
+    LayoutStateActionType,
+    useLayoutStateReducer,
+} from './useLayoutStateReducer'
+
+type ConversationIdDispatchValue<
+    T extends LayoutStateActionType
+> = T extends 'select_conversation'
+    ? {
+          conversationId: string
+      }
+    : {
+          conversationId?: never
+      }
+
+type DispatchWithConversationAction<T extends LayoutStateActionType> = {
+    type: T
+} & ConversationIdDispatchValue<T>
 
 interface AppProps {
     user: firebase.User | null
@@ -21,26 +39,31 @@ interface AppProps {
 
 function App(props: AppProps) {
     const appInitiated = firebase.apps.length > 0
+
     const {
         messages,
         conversations,
         conversationId,
         setConversationId,
     } = useConversation(appInitiated, props.user?.uid)
+    const windowSize = useWindowSize()
 
     const [currentDraft, setCurrentDraft] = React.useState('')
     const [searchValue, setSearchValue] = React.useState('')
-    const windowSize = useWindowSize()
-    const [showConversationForm, setShowConversationForm] = React.useState(
-        false
-    )
-    const [showUserSettings, setShowUserSettings] = React.useState(false)
+    const [layoutState, layoutStateDispatch] = useLayoutStateReducer()
 
     function handlePreviewSelect(id: string) {
-        setShowConversationForm(false)
-        setShowUserSettings(false)
-        setConversationId(id)
-        console.log('conversation id changed to ', id)
+        dispatchWithConversationId({
+            type: 'select_conversation',
+            conversationId: id,
+        })
+    }
+
+    function dispatchWithConversationId<T extends LayoutStateActionType>(
+        action: DispatchWithConversationAction<T>
+    ) {
+        layoutStateDispatch({ type: action.type })
+        setConversationId(action.conversationId || null)
     }
 
     function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -74,13 +97,12 @@ function App(props: AppProps) {
             // Create new conversation
             const conversationRef = await db.ref(`conversations`).push()
             const conversationId = conversationRef.key
-            console.log(`Created conversation ${conversationId}`)
+
             await conversationRef.set({
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
                 creatorId: props.user.uid,
                 name: name,
             })
-            console.log('Set successful')
 
             const everythingElse: Record<string, any> = {}
 
@@ -112,9 +134,12 @@ function App(props: AppProps) {
 
             await db.ref().update(everythingElse)
 
-            setConversationId(conversationId)
-            setShowConversationForm(false)
-            setShowUserSettings(false)
+            if (conversationId) {
+                dispatchWithConversationId({
+                    type: 'select_conversation',
+                    conversationId,
+                })
+            }
         } catch (outerError) {
             alert(`something went wrong: ${outerError}`)
         }
@@ -164,53 +189,45 @@ function App(props: AppProps) {
         e: React.MouseEvent<HTMLInputElement, MouseEvent>
     ) {
         e.preventDefault()
-        setConversationId(null)
-        setShowUserSettings(false)
-        setShowConversationForm(true)
+        dispatchWithConversationId({ type: 'show_conversation_form' })
     }
 
     function openUserSettings(
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) {
         e.preventDefault()
-        setConversationId(null)
-        setShowConversationForm(false)
-        setShowUserSettings(true)
+        dispatchWithConversationId({ type: 'show_user_settings' })
     }
 
     function updateUserProfile(
         userInfo: Partial<Pick<firebase.UserInfo, 'displayName' | 'photoURL'>>
     ) {
-        props.user
-            ?.updateProfile(userInfo)
-            .then(() => {
-                console.log('user profile updated successfully')
-            })
-            .catch((error) => {
-                console.error(`user profile not updated with error ${error}`)
-            })
+        props.user?.updateProfile(userInfo).catch((error) => {
+            alert(`user profile not updated with error ${error}`)
+        })
+    }
+
+    function returnToMain() {
+        dispatchWithConversationId({ type: 'return_to_main' })
     }
 
     const showInteractionLayout =
         windowSize !== 'xs' ||
         (windowSize === 'xs' &&
-            (conversationId || showConversationForm || showUserSettings))
+            (conversationId ||
+                layoutState.showConversationForm ||
+                layoutState.showUserSettings))
     const showHomeLayout =
         windowSize !== 'xs' ||
         (windowSize === 'xs' &&
             !conversationId &&
-            !showConversationForm &&
-            !showUserSettings)
+            !layoutState.showConversationForm &&
+            !layoutState.showUserSettings)
     const currentConversation =
         conversationId &&
         (conversations.find(
             (c) => c.id === conversationId
         ) as ClientConversation)
-    const back = () => {
-        setConversationId(null)
-        setShowConversationForm(false)
-        setShowUserSettings(false)
-    }
 
     return (
         <div id="app-root">
@@ -257,7 +274,7 @@ function App(props: AppProps) {
                         <>
                             <InteractionBar
                                 backIcon={windowSize === 'xs' ? '<' : 'X'}
-                                back={back}
+                                back={returnToMain}
                                 conversation={currentConversation}
                             />
                             <div style={{ height: '16px' }}></div>
@@ -273,12 +290,14 @@ function App(props: AppProps) {
                                 handleSend={createMessage}
                             />
                         </>
-                    ) : showConversationForm ? (
+                    ) : layoutState.showConversationForm ? (
                         <InteractionCreator
                             createConversation={createConversation}
-                            back={windowSize === 'xs' ? back : undefined}
+                            back={
+                                windowSize === 'xs' ? returnToMain : undefined
+                            }
                         />
-                    ) : showUserSettings ? (
+                    ) : layoutState.showUserSettings ? (
                         <UserSettings
                             displayName={props.user?.displayName || ''}
                             updateProfile={updateUserProfile}

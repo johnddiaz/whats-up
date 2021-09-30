@@ -2,6 +2,8 @@ import firebase from 'firebase'
 import { useEffect, useState } from 'react'
 import useLocalStorageState from '../utils/useLocalStorageState'
 
+export type SupportedAuthProvider = 'google' | 'github'
+
 const config = {
     apiKey: 'AIzaSyA51jM6IryfHm1HnzmXo66QQQCcRK1ld0M',
     authDomain: 'whats-up-ce34e.firebaseapp.com',
@@ -14,7 +16,7 @@ const config = {
 
 export default function useFirebaseAuth(): [
     firebase.User | null,
-    (method: 'google' | 'github') => void
+    (method: SupportedAuthProvider) => void
 ] {
     const [user, setUser] = useLocalStorageState<firebase.User>('firebaseUser')
     const [
@@ -26,7 +28,7 @@ export default function useFirebaseAuth(): [
         setGoogleProvider,
     ] = useState<firebase.auth.GoogleAuthProvider | null>(null)
 
-    function showSignInPopup(method: 'google' | 'github') {
+    function showSignInPopup(method: SupportedAuthProvider) {
         let selectedProvider
         if (method === 'github' && githubProvider) {
             selectedProvider = githubProvider
@@ -60,7 +62,6 @@ export default function useFirebaseAuth(): [
                 userName: user.displayName,
                 photoURL: user.photoURL,
             })
-            console.log('Created new user.')
         }
     }
 
@@ -77,13 +78,12 @@ export default function useFirebaseAuth(): [
                 // log in
                 setUser(user)
                 createUserInFirebaseIfNonexistent(user)
-                console.log('logged in by useEffect')
             } else {
                 // log out
                 setUser(null)
-                console.log('logged out by useEffect')
             }
         })
+        // Don't need to worry about setUser since it's the setter from useState
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
