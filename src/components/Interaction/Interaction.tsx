@@ -2,15 +2,18 @@ import * as React from 'react'
 import './Interaction.scss'
 import InteractionMessage from '../InteractionMessage'
 import { ClientConversation, ClientMessage } from '../../__shared__/models'
+import { UserStatuses } from '../../__shared__/types/userStatus'
 
 interface Props {
     userId: string
     conversation: ClientConversation
     messages: ClientMessage[]
+    statuses: UserStatuses
 }
 
 export default function Interaction(props: Props) {
     const newestMessageRef = React.useRef<HTMLDivElement | null>(null)
+    console.log(props.statuses)
 
     React.useEffect(() => {
         if (newestMessageRef.current) {
@@ -31,6 +34,7 @@ export default function Interaction(props: Props) {
                                 : undefined
                         }
                         userId={props.userId}
+                        userStatus={props.statuses[message.sender]}
                         placementClass={
                             props.userId && props.userId === message.sender
                                 ? 'interactionmessage-placement-self'

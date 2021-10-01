@@ -18,6 +18,7 @@ import {
     LayoutStateActionType,
     useLayoutStateReducer,
 } from './useLayoutStateReducer'
+import { useUserStatuses } from './useUserStatuses'
 
 type ConversationIdDispatchValue<
     T extends LayoutStateActionType
@@ -46,6 +47,14 @@ function App(props: AppProps) {
         conversationId,
         setConversationId,
     } = useConversation(appInitiated, props.user?.uid)
+    const currentConversation = conversationId
+        ? (conversations.find(
+              (c) => c.id === conversationId
+          ) as ClientConversation)
+        : null
+
+    const userStatuses = useUserStatuses(appInitiated, props.user?.uid)
+
     const windowSize = useWindowSize()
 
     const [currentDraft, setCurrentDraft] = React.useState('')
@@ -223,11 +232,6 @@ function App(props: AppProps) {
             !conversationId &&
             !layoutState.showConversationForm &&
             !layoutState.showUserSettings)
-    const currentConversation =
-        conversationId &&
-        (conversations.find(
-            (c) => c.id === conversationId
-        ) as ClientConversation)
 
     return (
         <div id="app-root">
@@ -282,6 +286,7 @@ function App(props: AppProps) {
                                 userId={props.user.uid}
                                 conversation={currentConversation}
                                 messages={messages}
+                                statuses={userStatuses}
                             />
                             <InteractionMessageEditor
                                 // userId={props.user.uid}
