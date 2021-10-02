@@ -19,6 +19,7 @@ import {
     useLayoutStateReducer,
 } from './useLayoutStateReducer'
 import { useUserStatuses } from './useUserStatuses'
+import BottomSettings from '../BottomSettings'
 
 type ConversationIdDispatchValue<
     T extends LayoutStateActionType
@@ -265,10 +266,10 @@ function App(props: AppProps) {
                                 />
                             ))}
                     </div>
-                    <button onClick={openUserSettings}>
-                        Edit User Settings
-                    </button>
-                    <button onClick={logOut}>Log Out</button>
+                    <BottomSettings
+                        logOut={logOut}
+                        openUserSettings={openUserSettings}
+                    />
                 </HomeLayout>
             )}
 
