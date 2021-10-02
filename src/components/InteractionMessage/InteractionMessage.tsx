@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { ClientMessage } from '../../__shared__/models'
 import { ClientUserStatus } from '../../__shared__/types/userStatus'
+import Avatar from '../Avatar'
 import './InteractionMessage.scss'
 
 export interface InteractionMessageProps {
@@ -39,41 +40,10 @@ export default function InteractionMessage(props: InteractionMessageProps) {
 
             <div style={{ display: 'flex' }}>
                 {!isSender && props.message.photoURL && (
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignSelf: 'flex-end',
-                            marginRight: '8px',
-                            height: '36px',
-                            width: '36px',
-                        }}
-                    >
-                        <img
-                            src={props.message.photoURL}
-                            alt="profile pic"
-                            style={{
-                                borderRadius: '50%',
-                                height: '36px',
-                                width: '36px',
-                            }}
-                        />
-                        <div
-                            style={{
-                                borderRadius: '50%',
-                                backgroundColor:
-                                    props.userStatus?.state === 'online'
-                                        ? '#57ba14'
-                                        : '#f9fff5',
-                                height: '11px',
-                                width: '11px',
-                                border: '1px solid grey',
-                                marginTop: '-14px',
-                                marginLeft: '24px',
-                                zIndex: 1000,
-                            }}
-                        ></div>
-                    </div>
+                    <Avatar
+                        photoURL={props.message.photoURL}
+                        badgeState={props.userStatus?.state}
+                    />
                 )}
                 <p id="interactionmessage-text" className={personClass}>
                     {props.message.content}

@@ -1,24 +1,34 @@
 import * as React from 'react'
-import './Avatar.scss'
+import { ClientUser } from '../../__shared__/types/user'
+import { ClientUserStatus } from '../../__shared__/types/userStatus'
+import styles from './Avatar.module.scss'
 
-type AvatarProps = {
-    size: 'sm' | 'md' | 'lg'
+interface Props {
+    photoURL: Required<ClientUser['photoURL']>
+    badgeState?: ClientUserStatus['state']
 }
 
-function Avatar(props: AvatarProps) {
-    const dimensions =
-        props.size === 'sm'
-            ? { height: '32px', width: '32px' }
-            : props.size === 'md'
-            ? { height: '44px', width: '44px' }
-            : { height: '56px', width: '56px' }
-
+function Avatar(props: Props) {
     return (
-        <div style={dimensions} id="avatar-root">
-            ?
+        <div className={styles.root}>
+            <img
+                src={props.photoURL}
+                alt="profile pic"
+                className={styles.img}
+            />
+            {props.badgeState && (
+                <div
+                    className={styles.badge}
+                    style={{
+                        backgroundColor:
+                            props.badgeState === 'online'
+                                ? '#57ba14'
+                                : '#f9fff5',
+                    }}
+                ></div>
+            )}
         </div>
     )
 }
 
-export type { AvatarProps }
 export default Avatar

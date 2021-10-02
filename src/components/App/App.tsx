@@ -20,6 +20,7 @@ import {
 } from './useLayoutStateReducer'
 import { useUsers } from './useUsers'
 import BottomSettings from '../BottomSettings'
+import Avatar from '../Avatar'
 
 type ConversationIdDispatchValue<
     T extends LayoutStateActionType
@@ -293,45 +294,13 @@ function App(props: AppProps) {
                                             }}
                                         >
                                             {user.photoURL && (
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        alignSelf: 'flex-end',
-                                                        marginRight: '8px',
-                                                        height: '36px',
-                                                        width: '36px',
-                                                    }}
-                                                >
-                                                    <img
-                                                        src={user.photoURL}
-                                                        alt="profile pic"
-                                                        style={{
-                                                            borderRadius: '50%',
-                                                            height: '36px',
-                                                            width: '36px',
-                                                        }}
-                                                    />
-                                                    <div
-                                                        style={{
-                                                            borderRadius: '50%',
-                                                            backgroundColor:
-                                                                userStatuses[
-                                                                    user.id
-                                                                ]?.state ===
-                                                                'online'
-                                                                    ? '#57ba14'
-                                                                    : '#f9fff5',
-                                                            height: '11px',
-                                                            width: '11px',
-                                                            border:
-                                                                '1px solid grey',
-                                                            marginTop: '-14px',
-                                                            marginLeft: '24px',
-                                                            zIndex: 1000,
-                                                        }}
-                                                    ></div>
-                                                </div>
+                                                <Avatar
+                                                    photoURL={user.photoURL}
+                                                    badgeState={
+                                                        userStatuses[user.id]
+                                                            .state
+                                                    }
+                                                />
                                             )}
 
                                             <h5 style={{ margin: '0' }}>
