@@ -18,7 +18,7 @@ import {
     LayoutStateActionType,
     useLayoutStateReducer,
 } from './useLayoutStateReducer'
-import { useUserStatuses } from './useUserStatuses'
+import { useUsers } from './useUsers'
 import BottomSettings from '../BottomSettings'
 
 type ConversationIdDispatchValue<
@@ -54,7 +54,7 @@ function App(props: AppProps) {
           ) as ClientConversation)
         : null
 
-    const userStatuses = useUserStatuses(appInitiated, props.user?.uid)
+    const [users, userStatuses] = useUsers(appInitiated, props.user?.uid)
 
     const windowSize = useWindowSize()
 
@@ -245,26 +245,102 @@ function App(props: AppProps) {
                     />
                     <div
                         style={{
-                            overflow: 'scroll',
-                            borderBottom: '1px solid black',
-                            padding: '0px 4px 16px',
                             height: '100%',
+                            padding: '0px 4px 16px',
+                            marginLeft: '16px',
+                            marginRight: '16px',
                         }}
                     >
-                        {conversations
-                            .filter((convo) => {
-                                return (
-                                    !searchValue ||
-                                    convo.name.includes(searchValue)
-                                )
-                            })
-                            .map((convo) => (
-                                <ChatPreview
-                                    key={convo.id}
-                                    conversation={convo}
-                                    onPreviewClick={handlePreviewSelect}
-                                />
-                            ))}
+                        <div>
+                            <h3>Conversations</h3>
+                            <div
+                                style={{
+                                    overflow: 'scroll',
+                                }}
+                            >
+                                {conversations
+                                    .filter((convo) => {
+                                        return (
+                                            !searchValue ||
+                                            convo.name.includes(searchValue)
+                                        )
+                                    })
+                                    .map((convo) => (
+                                        <ChatPreview
+                                            key={convo.id}
+                                            conversation={convo}
+                                            onPreviewClick={handlePreviewSelect}
+                                        />
+                                    ))}
+                            </div>
+                        </div>
+                        <div>
+                            <h3>People</h3>
+                            <div style={{ overflow: 'scroll' }}>
+                                {users
+                                    .filter(
+                                        (user) => user.id !== props.user?.uid
+                                    )
+                                    .map((user) => (
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                border: '1px solid black',
+                                                borderRadius: '12px',
+                                                padding: '16px',
+                                                marginBottom: '8px',
+                                            }}
+                                        >
+                                            {user.photoURL && (
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignSelf: 'flex-end',
+                                                        marginRight: '8px',
+                                                        height: '36px',
+                                                        width: '36px',
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={user.photoURL}
+                                                        alt="profile pic"
+                                                        style={{
+                                                            borderRadius: '50%',
+                                                            height: '36px',
+                                                            width: '36px',
+                                                        }}
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            borderRadius: '50%',
+                                                            backgroundColor:
+                                                                userStatuses[
+                                                                    user.id
+                                                                ]?.state ===
+                                                                'online'
+                                                                    ? '#57ba14'
+                                                                    : '#f9fff5',
+                                                            height: '11px',
+                                                            width: '11px',
+                                                            border:
+                                                                '1px solid grey',
+                                                            marginTop: '-14px',
+                                                            marginLeft: '24px',
+                                                            zIndex: 1000,
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            )}
+
+                                            <h5 style={{ margin: '0' }}>
+                                                {user.userName}
+                                            </h5>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
                     </div>
                     <BottomSettings
                         logOut={logOut}

@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { ClientMessage } from '../../__shared__/models'
-import { UserStatus } from '../../__shared__/types/userStatus'
+import { ClientUserStatus } from '../../__shared__/types/userStatus'
 import './InteractionMessage.scss'
 
 export interface InteractionMessageProps {
     userId: string
-    userStatus: UserStatus | undefined
+    userStatus: ClientUserStatus | undefined
     message: ClientMessage
     newestMessageRef?: React.MutableRefObject<HTMLDivElement | null>
     placementClass?: string

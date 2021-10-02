@@ -3,11 +3,11 @@ export interface ServerUserStatus {
     lastChanged: Object
 }
 
-export interface UserStatus {
+export interface ClientUserStatus {
     state: 'online' | 'offline'
     lastChanged: string
 }
 
-export interface UserStatuses {
-    [userId: string]: UserStatus
+export interface ClientUserStatuses {
+    [userId: string]: ClientUserStatus
 }

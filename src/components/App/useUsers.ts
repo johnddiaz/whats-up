@@ -2,14 +2,16 @@ import * as React from 'react'
 import firebase from 'firebase'
 import {
     ServerUserStatus,
-    UserStatuses,
+    ClientUserStatuses,
 } from '../../__shared__/types/userStatus'
+import { ClientUser } from '../../__shared__/types/user'
 
-export function useUserStatuses(
+export function useUsers(
     initialized: boolean,
     userId: string | undefined
-): UserStatuses {
-    const [statuses, setStatuses] = React.useState<UserStatuses>({})
+): [ClientUser[], ClientUserStatuses] {
+    const [statuses, setStatuses] = React.useState<ClientUserStatuses>({})
+    const [users, setUsers] = React.useState<ClientUser[]>([])
 
     /**
      * Updates the logged-in user's status in the database.
@@ -81,7 +83,7 @@ export function useUserStatuses(
 
         ;(async () => {
             let lastStatusKey = ''
-            const newStatuses: UserStatuses = {}
+            const newStatuses: ClientUserStatuses = {}
 
             const statusResolved = await db
                 .ref('/status')
@@ -131,5 +133,74 @@ export function useUserStatuses(
         }
     }, [initialized])
 
-    return statuses
+    /**
+     * Reads and listens to users.
+     */
+    React.useEffect(() => {
+        if (!initialized) {
+            return
+        }
+
+        const db = firebase.database()
+        const usersRef = db.ref('/users')
+
+        ;(async () => {
+            let lastUserKey = ''
+            const newUsers: ClientUser[] = []
+
+            const usersResolved = await db
+                .ref('/users')
+                .orderByKey()
+                .once('value')
+            usersResolved.forEach((data) => {
+                if (data.key) {
+                    lastUserKey = data.key
+                    newUsers.push({
+                        id: data.key,
+                        userName: data.child('userName').val(),
+                        photoURL: data.child('photoURL').val(),
+                    })
+                }
+            })
+            setUsers(newUsers)
+
+            usersRef.startAfter(lastUserKey).on('child_added', (data) => {
+                const key = data.key
+                if (key) {
+                    setUsers((prev) => [
+                        ...prev,
+                        {
+                            id: key,
+                            userName: data.child('userName').val(),
+                            photoURL: data.child('photoURL').val(),
+                        },
+                    ])
+                }
+            })
+
+            usersRef.on('child_changed', (data) => {
+                const key = data.key
+                if (key) {
+                    setUsers((prev) => {
+                        const newUsers = [...prev]
+                        const changedUser = newUsers.find(
+                            (user) => user.id === key
+                        )
+                        if (changedUser) {
+                            changedUser.userName = data.child('userName').val()
+                            changedUser.photoURL = data.child('photoURL').val()
+                        }
+                        return newUsers
+                    })
+                }
+            })
+        })()
+
+        return () => {
+            usersRef.off('child_added')
+            usersRef.off('child_changed')
+        }
+    }, [initialized])
+
+    return [users, statuses]
 }

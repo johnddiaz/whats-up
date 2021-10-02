@@ -2,13 +2,13 @@ import * as React from 'react'
 import './Interaction.scss'
 import InteractionMessage from '../InteractionMessage'
 import { ClientConversation, ClientMessage } from '../../__shared__/models'
-import { UserStatuses } from '../../__shared__/types/userStatus'
+import { ClientUserStatuses } from '../../__shared__/types/userStatus'
 
 interface Props {
     userId: string
     conversation: ClientConversation
     messages: ClientMessage[]
-    statuses: UserStatuses
+    statuses: ClientUserStatuses
 }
 
 export default function Interaction(props: Props) {
