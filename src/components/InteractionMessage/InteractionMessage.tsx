@@ -38,7 +38,12 @@ export default function InteractionMessage(props: InteractionMessageProps) {
                 </p>
             )}
 
-            <div style={{ display: 'flex' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    alignSelf: isSender ? 'flex-end' : 'flex-start',
+                }}
+            >
                 {!isSender && props.message.photoURL && (
                     <Avatar
                         photoURL={props.message.photoURL}
@@ -53,7 +58,9 @@ export default function InteractionMessage(props: InteractionMessageProps) {
                 style={{
                     marginTop: '4px',
                     textAlign: isSender ? 'right' : 'left',
-                    ...(!isSender ? { marginLeft: '56px' } : null),
+                    ...(!isSender
+                        ? { marginLeft: '56px' }
+                        : { marginRight: '12px' }),
                     fontSize: '10px',
                 }}
             >

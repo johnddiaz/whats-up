@@ -23,8 +23,8 @@ export default function Interaction(props: Props) {
 
     return (
         <div id="interaction-root">
-            {props.messages.map((message, index) => (
-                <React.Fragment key={message.id}>
+            {props.messages.map((message, index) => {
+                return (
                     <InteractionMessage
                         key={message.id}
                         message={message}
@@ -41,8 +41,8 @@ export default function Interaction(props: Props) {
                                 : 'interactionmessage-placement-friend'
                         }
                     />
-                </React.Fragment>
-            ))}
+                )
+            })}
         </div>
     )
 }
