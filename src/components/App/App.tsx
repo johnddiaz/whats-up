@@ -284,6 +284,7 @@ function App(props: AppProps) {
                                     )
                                     .map((user) => (
                                         <div
+                                            key={user.id}
                                             style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -303,7 +304,11 @@ function App(props: AppProps) {
                                                 />
                                             )}
 
-                                            <h5 style={{ margin: '0' }}>
+                                            <h5
+                                                style={{
+                                                    margin: '0',
+                                                }}
+                                            >
                                                 {user.userName}
                                             </h5>
                                         </div>
