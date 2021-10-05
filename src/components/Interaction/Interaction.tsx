@@ -125,7 +125,12 @@ export default function Interaction(props: Props) {
                     pastDate.getTime() >= currentDate.getTime() + threeHours
             }
 
-            let timelineTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`
+            let hours: number | string = currentDate.getHours()
+            let minutes: number | string = currentDate.getMinutes()
+            hours = hours < 10 ? `${0}${hours}` : hours
+            minutes = minutes < 10 ? `${0}${minutes}` : minutes
+
+            let timelineTime = `${hours}:${minutes}`
             let timelineDay
             if (showTimelineAboveMessage) {
                 if (currentDate.toDateString() === now.toDateString()) {
