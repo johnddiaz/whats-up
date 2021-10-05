@@ -97,6 +97,13 @@ export default function Interaction(props: Props) {
 
     function renderMessagesTimeline() {
         const styling = calculateMessageStyling()
+        const now = new Date() // race condition possible, but chances are small
+        const dayFormatter = new Intl.DateTimeFormat('en-US', {
+            weekday: 'long',
+        })
+        const monthFormatter = new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+        })
         return props.messages.map((message, index, arr) => {
             const isSender = !!(props.userId && props.userId === message.sender)
             const userStatus = props.statuses[message.sender]
@@ -118,17 +125,55 @@ export default function Interaction(props: Props) {
                     pastDate.getTime() >= currentDate.getTime() + threeHours
             }
 
+            let timelineTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`
+            let timelineDay
+            if (showTimelineAboveMessage) {
+                if (currentDate.toDateString() === now.toDateString()) {
+                    timelineDay = 'Today'
+                } else if (
+                    currentDate.toDateString() ===
+                    new Date(now.getTime() - 1000 * 60 * 60 * 24).toDateString()
+                ) {
+                    timelineDay = 'Yesterday'
+                } else {
+                    // When calculating messages, we want to see if a message is
+                    // within 7 days inclusive.
+                    const nowOffset =
+                        now.getHours() * 60 * 60 * 1000 +
+                        now.getMinutes() * 60 * 1000 +
+                        now.getSeconds() * 1000 +
+                        now.getMilliseconds()
+                    // Within last 6 running days inclusive.
+                    // one day has 1000*60*60*24 milliseconds)
+                    if (
+                        currentDate.getTime() >
+                        new Date(
+                            now.getTime() -
+                                (1000 * 60 * 60 * 24 * 6 + nowOffset)
+                        ).getTime()
+                    ) {
+                        timelineDay = dayFormatter.format(currentDate)
+                    } else {
+                        const month = monthFormatter.format(currentDate)
+                        timelineDay = `${dayFormatter.format(
+                            currentDate
+                        )}, ${month} ${currentDate.getDate()}`
+                    }
+                }
+            }
+
             return (
-                <>
-                    {showTimelineAboveMessage && (
+                <React.Fragment key={`rf-${message.id}`}>
+                    {showTimelineAboveMessage && timelineDay && (
                         <p
+                            key={`tmln-${message.id}`}
                             style={{
                                 textAlign: 'center',
                                 marginTop: '30px',
                                 marginBottom: '8px',
                             }}
                         >
-                            {currentDate.toDateString()}
+                            {`${timelineDay} - ${timelineTime}`}
                         </p>
                     )}
                     <InteractionMessage
@@ -161,7 +206,7 @@ export default function Interaction(props: Props) {
                         }
                         marginTop={styling.marginTop[message.id]}
                     />
-                </>
+                </React.Fragment>
             )
         })
     }
