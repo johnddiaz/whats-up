@@ -65,7 +65,8 @@ export default function Interaction(props: Props) {
                             ] = true
                             previousStyling.marginTop[currentMessage.id] = '1px'
                         } else {
-                            previousStyling.marginTop[currentMessage.id] = '8px'
+                            previousStyling.marginTop[currentMessage.id] =
+                                '12px'
                         }
                     } else {
                         previousStyling.marginTop[currentMessage.id] = '30px'
@@ -94,49 +95,78 @@ export default function Interaction(props: Props) {
         )
     }
 
-    function renderMessages() {
+    function renderMessagesTimeline() {
         const styling = calculateMessageStyling()
         return props.messages.map((message, index, arr) => {
-            // squishAbove={squishes.squishAbove[message.id]}
-            // squishBelow={squishes.squishBelow[message.id]}
             const isSender = !!(props.userId && props.userId === message.sender)
             const userStatus = props.statuses[message.sender]
+            const currentDate = new Date(message.createdAt)
+            let showTimelineAboveMessage: boolean = false
+
+            // show timeline if current message is first in the list,
+            // or if the previous message is a different day tha the current message
+            // or if the previous message is 3 or more hours since the current message
+
+            if (index === 0) {
+                showTimelineAboveMessage = true
+            } else {
+                const pastDate = new Date(arr[index - 1].createdAt)
+                const threeHours = 3 * 60 * 60 * 1000
+                showTimelineAboveMessage =
+                    index === 0 ||
+                    pastDate.toDateString() !== currentDate.toDateString() ||
+                    pastDate.getTime() >= currentDate.getTime() + threeHours
+            }
+
             return (
-                <InteractionMessage
-                    key={message.id}
-                    message={message}
-                    newestMessageRef={
-                        index === props.messages.length - 1
-                            ? newestMessageRef
-                            : undefined
-                    }
-                    isSender={isSender}
-                    userStatus={userStatus}
-                    avatar={
-                        !isSender &&
-                        message.photoURL &&
-                        !styling.messagesWithoutAvatar[message.id] ? (
-                            <Avatar
-                                photoURL={message.photoURL}
-                                badgeState={userStatus.state}
-                            />
-                        ) : null
-                    }
-                    squishAbove={styling.squishAbove[message.id]}
-                    squishBelow={styling.squishBelow[message.id]}
-                    showName={!styling.squishAbove[message.id]}
-                    placementClass={
-                        props.userId && props.userId === message.sender
-                            ? 'interactionmessage-placement-self'
-                            : 'interactionmessage-placement-friend'
-                    }
-                    marginTop={styling.marginTop[message.id]}
-                />
+                <>
+                    {showTimelineAboveMessage && (
+                        <p
+                            style={{
+                                textAlign: 'center',
+                                marginTop: '30px',
+                                marginBottom: '8px',
+                            }}
+                        >
+                            {currentDate.toDateString()}
+                        </p>
+                    )}
+                    <InteractionMessage
+                        key={message.id}
+                        message={message}
+                        newestMessageRef={
+                            index === props.messages.length - 1
+                                ? newestMessageRef
+                                : undefined
+                        }
+                        isSender={isSender}
+                        userStatus={userStatus}
+                        avatar={
+                            !isSender &&
+                            message.photoURL &&
+                            !styling.messagesWithoutAvatar[message.id] ? (
+                                <Avatar
+                                    photoURL={message.photoURL}
+                                    badgeState={userStatus.state}
+                                />
+                            ) : null
+                        }
+                        squishAbove={styling.squishAbove[message.id]}
+                        squishBelow={styling.squishBelow[message.id]}
+                        showName={!styling.squishAbove[message.id]}
+                        placementClass={
+                            props.userId && props.userId === message.sender
+                                ? 'interactionmessage-placement-self'
+                                : 'interactionmessage-placement-friend'
+                        }
+                        marginTop={styling.marginTop[message.id]}
+                    />
+                </>
             )
         })
     }
 
-    return <div id="interaction-root">{renderMessages()}</div>
+    return <div id="interaction-root">{renderMessagesTimeline()}</div>
 }
 
 export type { Props as InteractionProps }

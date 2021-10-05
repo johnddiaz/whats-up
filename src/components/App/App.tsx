@@ -256,7 +256,7 @@ function App(props: AppProps) {
                             <h3>Conversations</h3>
                             <div
                                 style={{
-                                    overflow: 'scroll',
+                                    overflow: 'auto',
                                 }}
                             >
                                 {conversations
@@ -277,7 +277,7 @@ function App(props: AppProps) {
                         </div>
                         <div>
                             <h3>People</h3>
-                            <div style={{ overflow: 'scroll' }}>
+                            <div style={{ overflow: 'auto' }}>
                                 {users
                                     .filter(
                                         (user) => user.id !== props.user?.uid
@@ -332,7 +332,6 @@ function App(props: AppProps) {
                                 back={returnToMain}
                                 conversation={currentConversation}
                             />
-                            <div style={{ height: '16px' }}></div>
                             <Interaction
                                 userId={props.user.uid}
                                 conversation={currentConversation}
