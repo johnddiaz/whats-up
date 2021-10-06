@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { ClientMessage } from '../../__shared__/models'
 import { ClientUserStatus } from '../../__shared__/types/userStatus'
-import Avatar from '../Avatar'
 import './InteractionMessage.scss'
 
 export interface InteractionMessageProps {
@@ -86,7 +85,7 @@ export default function InteractionMessage(props: InteractionMessageProps) {
                 <p
                     id="interactionmessage-text"
                     className={personClass}
-                    style={{ ...borderStyling }}
+                    style={{ ...borderStyling, whiteSpace: 'pre-wrap' }}
                     onClick={() => setShowTime((prev) => !prev)}
                 >
                     {props.message.content}
