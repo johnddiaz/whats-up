@@ -4,6 +4,7 @@ import InteractionMessage from '../InteractionMessage'
 import { ClientConversation, ClientMessage } from '../../__shared__/models'
 import { ClientUserStatuses } from '../../__shared__/types/userStatus'
 import Avatar from '../Avatar'
+import { convertToMillis, convertToSecs } from '../../__shared__/utils/dateTime'
 
 interface MessageStyling {
     squishAbove: {
@@ -50,15 +51,18 @@ export default function Interaction(props: Props) {
 
         return props.messages.reduce(
             (previousStyling, currentMessage, index, arr) => {
-                const currentMessageSeconds =
-                    Number.parseInt(currentMessage.createdAt) / 1000
+                const currentMessageSeconds = convertToSecs({
+                    millis: Number.parseInt(currentMessage.createdAt),
+                })
                 // Look behind - only when there is a previous message for same user
                 if (index > 0) {
                     if (arr[index - 1].sender === currentMessage.sender) {
                         const previousMessageTime = arr[index - 1].createdAt
                         const secondsBetweenLastMessage =
                             currentMessageSeconds -
-                            Number.parseInt(previousMessageTime) / 1000
+                            convertToSecs({
+                                millis: Number.parseInt(previousMessageTime),
+                            })
                         if (secondsBetweenLastMessage < 60) {
                             previousStyling.squishAbove[
                                 currentMessage.id
@@ -80,8 +84,9 @@ export default function Interaction(props: Props) {
                 ) {
                     const nextMessageTime = arr[index + 1].createdAt
                     const secondsBetweenNextMessage =
-                        Number.parseInt(nextMessageTime) / 1000 -
-                        currentMessageSeconds
+                        convertToSecs({
+                            millis: Number.parseInt(nextMessageTime),
+                        }) - currentMessageSeconds
                     if (secondsBetweenNextMessage < 60) {
                         previousStyling.squishBelow[currentMessage.id] = true
                         previousStyling.messagesWithoutAvatar[
@@ -118,11 +123,11 @@ export default function Interaction(props: Props) {
                 showTimelineAboveMessage = true
             } else {
                 const pastDate = new Date(arr[index - 1].createdAt)
-                const threeHours = 3 * 60 * 60 * 1000
                 showTimelineAboveMessage =
                     index === 0 ||
                     pastDate.toDateString() !== currentDate.toDateString() ||
-                    pastDate.getTime() >= currentDate.getTime() + threeHours
+                    pastDate.getTime() >=
+                        currentDate.getTime() + convertToMillis({ hours: 3 })
             }
 
             let hours: number | string = currentDate.getHours()
@@ -137,24 +142,27 @@ export default function Interaction(props: Props) {
                     timelineDay = 'Today'
                 } else if (
                     currentDate.toDateString() ===
-                    new Date(now.getTime() - 1000 * 60 * 60 * 24).toDateString()
+                    new Date(
+                        now.getTime() - convertToMillis({ days: 1 })
+                    ).toDateString()
                 ) {
                     timelineDay = 'Yesterday'
                 } else {
                     // When calculating messages, we want to see if a message is
-                    // within 7 days inclusive.
-                    const nowOffset =
-                        now.getHours() * 60 * 60 * 1000 +
-                        now.getMinutes() * 60 * 1000 +
-                        now.getSeconds() * 1000 +
-                        now.getMilliseconds()
+                    // within 6 days inclusive.
+                    const nowOffset = convertToMillis({
+                        hours: now.getHours(),
+                        mins: now.getMinutes(),
+                        secs: now.getSeconds(),
+                        millis: now.getMilliseconds(),
+                    })
                     // Within last 6 running days inclusive.
                     // one day has 1000*60*60*24 milliseconds)
                     if (
                         currentDate.getTime() >
                         new Date(
                             now.getTime() -
-                                (1000 * 60 * 60 * 24 * 6 + nowOffset)
+                                (convertToMillis({ days: 6 }) + nowOffset)
                         ).getTime()
                     ) {
                         timelineDay = dayFormatter.format(currentDate)
