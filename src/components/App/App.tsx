@@ -247,13 +247,13 @@ function App(props: AppProps) {
                     <div
                         style={{
                             height: '100%',
-                            padding: '0px 4px 16px',
-                            marginLeft: '16px',
-                            marginRight: '16px',
+                            padding: '0px 0px 16px',
                         }}
                     >
                         <div>
-                            <h3>Conversations</h3>
+                            <h3 style={{ paddingLeft: '16px' }}>
+                                Conversations
+                            </h3>
                             <div
                                 style={{
                                     overflow: 'auto',
@@ -276,7 +276,7 @@ function App(props: AppProps) {
                             </div>
                         </div>
                         <div>
-                            <h3>People</h3>
+                            <h3 style={{ paddingLeft: '16px' }}>People</h3>
                             <div style={{ overflow: 'auto' }}>
                                 {users
                                     .filter(
@@ -288,8 +288,8 @@ function App(props: AppProps) {
                                             style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                border: '1px solid black',
-                                                borderRadius: '12px',
+                                                borderTop: '1px solid black',
+                                                borderBottom: '1px solid black',
                                                 padding: '16px',
                                                 marginBottom: '8px',
                                             }}

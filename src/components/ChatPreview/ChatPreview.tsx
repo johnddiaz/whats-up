@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './ChatPreview.scss'
+import styles from './ChatPreview.module.scss'
 import '../../__shared__/styles.scss'
 import { ClientConversation } from '../../__shared__/models'
 
@@ -14,8 +14,8 @@ export default function ChatPreview(props: Props) {
     }
 
     return (
-        <div id="chatpreview-root" onClick={onPreviewClick}>
-            <div id="chatpreview-text-root">
+        <div className={styles.root} onClick={onPreviewClick}>
+            <div className={styles.textRoot}>
                 <h4 style={{ margin: '0 0 8px' }}>
                     {props.conversation.name || props.conversation.id}
                 </h4>

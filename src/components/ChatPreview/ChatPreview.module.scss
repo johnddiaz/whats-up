@@ -1,6 +1,6 @@
-#chatpreview-root {
-    border: 1px solid black;
-    border-radius: 12px;
+.root {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
     display: flex;
     align-items: center;
     padding: 16px;
@@ -12,7 +12,7 @@
     }
 }
 
-#chatpreview-text-root {
+.textRoot {
     display: flex;
     flex-direction: column;
     padding-left: 8px;
