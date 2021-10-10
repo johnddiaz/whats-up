@@ -15,7 +15,7 @@ export function useWindowSize(): WindowSize | undefined {
                 setWindowSize('lg')
             } else if (width >= 960) {
                 setWindowSize('md')
-            } else if (width >= 600) {
+            } else if (width >= 700) {
                 setWindowSize('sm')
             } else {
                 setWindowSize('xs')

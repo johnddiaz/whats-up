@@ -19,7 +19,7 @@ export default function ChatPreview(props: Props) {
                 <h4 style={{ margin: '0 0 8px' }}>
                     {props.conversation.name || props.conversation.id}
                 </h4>
-                <h5 style={{ margin: '0' }}>
+                <p style={{ margin: '0' }}>
                     {props.conversation.otherUsers.length > 0
                         ? props.conversation.otherUsers.map(
                               (user, index, original) => {
@@ -33,8 +33,8 @@ export default function ChatPreview(props: Props) {
                                   }
                               }
                           )
-                        : 'No other users here.'}
-                </h5>
+                        : 'No users here.'}
+                </p>
             </div>
         </div>
     )

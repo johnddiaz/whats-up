@@ -3,3 +3,10 @@
     height: 100%;
     box-sizing: border-box;
 }
+
+.hover {
+    cursor: pointer;
+    &:hover {
+        box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.6);
+    }
+}

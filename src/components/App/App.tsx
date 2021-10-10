@@ -2,7 +2,7 @@ import React from 'react'
 import './styles.scss'
 import '../../__shared__/styles.scss'
 import ChatPreview from '../ChatPreview'
-import HomeToolbar from '../ChatsToolbar'
+import HomeToolbar from '../HomeHeader'
 import Interaction from '../Interaction'
 import InteractionMessageEditor from '../InteractionMessageEditor'
 import { ChatsLayout as HomeLayout, InteractionLayout } from './layouts'
@@ -20,7 +20,8 @@ import {
 } from './useLayoutStateReducer'
 import { useUsers } from './useUsers'
 import BottomSettings from '../BottomSettings'
-import Avatar from '../Avatar'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 
 type ConversationIdDispatchValue<
     T extends LayoutStateActionType
@@ -60,7 +61,6 @@ function App(props: AppProps) {
     const windowSize = useWindowSize()
 
     const [currentDraft, setCurrentDraft] = React.useState('')
-    const [searchValue, setSearchValue] = React.useState('')
     const [layoutState, layoutStateDispatch] = useLayoutStateReducer()
 
     function handlePreviewSelect(id: string) {
@@ -80,11 +80,6 @@ function App(props: AppProps) {
     function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         e.preventDefault()
         setCurrentDraft(e.target.value)
-    }
-
-    function handleSearchValueChange(e: React.ChangeEvent<HTMLInputElement>) {
-        e.preventDefault()
-        setSearchValue(e.target.value)
     }
 
     async function createConversation(friendId: string, name: string) {
@@ -240,10 +235,40 @@ function App(props: AppProps) {
             {showHomeLayout && (
                 <HomeLayout>
                     <HomeToolbar
-                        searchValue={searchValue}
-                        handleSearchChange={handleSearchValueChange}
-                        openConversationForm={openConversationForm}
+                        user={props.user}
+                        userState={
+                            props.user && userStatuses[props.user.uid]?.state
+                        }
                     />
+                    <div
+                        className="hover"
+                        style={{
+                            margin: '16px 0',
+                            padding: '8px 16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        New conversation
+                        <div
+                            onClick={openConversationForm}
+                            style={{
+                                display: 'flex',
+                                height: '32px',
+                                width: '32px',
+                                backgroundColor: 'black',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                borderRadius: '5px',
+                                marginLeft: '8px',
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faPlusCircle} size={'sm'} />
+                        </div>
+                    </div>
+
                     <div
                         style={{
                             height: '100%',
@@ -251,68 +276,18 @@ function App(props: AppProps) {
                         }}
                     >
                         <div>
-                            <h3 style={{ paddingLeft: '16px' }}>
-                                Conversations
-                            </h3>
                             <div
                                 style={{
                                     overflow: 'auto',
                                 }}
                             >
-                                {conversations
-                                    .filter((convo) => {
-                                        return (
-                                            !searchValue ||
-                                            convo.name.includes(searchValue)
-                                        )
-                                    })
-                                    .map((convo) => (
-                                        <ChatPreview
-                                            key={convo.id}
-                                            conversation={convo}
-                                            onPreviewClick={handlePreviewSelect}
-                                        />
-                                    ))}
-                            </div>
-                        </div>
-                        <div>
-                            <h3 style={{ paddingLeft: '16px' }}>People</h3>
-                            <div style={{ overflow: 'auto' }}>
-                                {users
-                                    .filter(
-                                        (user) => user.id !== props.user?.uid
-                                    )
-                                    .map((user) => (
-                                        <div
-                                            key={user.id}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                borderTop: '1px solid black',
-                                                borderBottom: '1px solid black',
-                                                padding: '16px',
-                                                marginBottom: '8px',
-                                            }}
-                                        >
-                                            {user.photoURL && (
-                                                <Avatar
-                                                    photoURL={user.photoURL}
-                                                    badgeState={
-                                                        userStatuses[user.id]
-                                                            .state
-                                                    }
-                                                />
-                                            )}
-
-                                            <h5
-                                                style={{
-                                                    margin: '0',
-                                                }}
-                                            >
-                                                {user.userName}
-                                            </h5>
-                                        </div>
-                                    ))}
+                                {conversations.map((convo) => (
+                                    <ChatPreview
+                                        key={convo.id}
+                                        conversation={convo}
+                                        onPreviewClick={handlePreviewSelect}
+                                    />
+                                ))}
                             </div>
                         </div>
                     </div>

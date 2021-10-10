@@ -6,8 +6,9 @@ export function ChatsLayout(props: { children: React.ReactNode }) {
             style={{
                 display: 'flex',
                 flexDirection: 'column',
-                flexGrow: 1,
+                flexGrow: 2,
                 flexBasis: 0,
+                maxWidth: '700px',
             }}
         >
             {props.children}

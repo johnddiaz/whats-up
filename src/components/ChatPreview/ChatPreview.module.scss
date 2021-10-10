@@ -1,6 +1,6 @@
 .root {
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+    border-top: 1px solid #d1d0d0;
+    border-bottom: 1px solid #d1d0d0;
     display: flex;
     align-items: center;
     padding: 16px;
@@ -15,5 +15,4 @@
 .textRoot {
     display: flex;
     flex-direction: column;
-    padding-left: 8px;
 }

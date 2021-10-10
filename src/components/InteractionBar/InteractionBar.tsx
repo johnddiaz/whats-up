@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { ClientConversation } from '../../__shared__/models'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
 interface Props {
     back: () => void
@@ -9,27 +11,31 @@ interface Props {
 
 export default function InteractionBar(props: Props) {
     return (
-        <div
+        <header
             style={{
                 width: '100%',
-                height: '48px',
+                height: '56px',
                 backgroundColor: 'black',
                 color: 'white',
                 display: 'flex',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
+                boxShadow: '0px 2px 12px 0px #000000',
             }}
         >
-            <button
+            <div
                 onClick={props.back}
                 style={{
-                    padding: '8px',
+                    display: 'flex',
+                    backgroundColor: 'black',
+                    color: 'white',
+                    borderRadius: '5px',
                     marginLeft: '16px',
                 }}
             >
-                {props.backIcon}
-            </button>
+                <FontAwesomeIcon icon={faArrowLeft} size={'lg'} />
+            </div>
             <h3 style={{ marginLeft: '16px' }}>{props.conversation.name}</h3>
-        </div>
+        </header>
     )
 }
