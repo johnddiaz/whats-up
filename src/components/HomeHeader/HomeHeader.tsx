@@ -11,11 +11,14 @@ interface Props {
 export default function HomeHeader(props: Props) {
     return (
         <header className={styles.root}>
-            <Avatar
-                photoURL={props.user?.photoURL}
-                size={'sm'}
-                badgeState={props.userState}
-            />
+            {props.user?.photoURL && (
+                <Avatar
+                    photoURL={props.user.photoURL}
+                    size={'sm'}
+                    badgeState={props.userState}
+                />
+            )}
+
             <h3
                 style={{
                     marginLeft: '16px',

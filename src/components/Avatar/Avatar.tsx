@@ -3,13 +3,13 @@ import { ClientUserStatus } from '../../__shared__/types/userStatus'
 import styles from './Avatar.module.scss'
 
 interface Props {
-    photoURL: string | null | undefined
+    photoURL: string
     size?: 'sm' | 'lg'
     badgeState?: ClientUserStatus['state'] | null
     style?: React.CSSProperties
 }
 
-function Avatar(props: Props) {
+export default function Avatar(props: Props) {
     const avatarDimensions =
         props.size === 'sm'
             ? {
@@ -40,7 +40,7 @@ function Avatar(props: Props) {
             style={{ ...avatarDimensions, ...props.style }}
         >
             <img
-                src={props.photoURL as string}
+                src={props.photoURL}
                 alt="profile pic"
                 className={styles.img}
                 style={avatarDimensions}
@@ -60,5 +60,3 @@ function Avatar(props: Props) {
         </div>
     )
 }
-
-export default Avatar

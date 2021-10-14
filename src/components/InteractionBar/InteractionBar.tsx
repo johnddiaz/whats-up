@@ -31,11 +31,13 @@ export default function InteractionBar(props: Props) {
                     color: 'white',
                     borderRadius: '5px',
                     marginLeft: '16px',
+                    cursor: 'pointer',
+                    padding: '8px 8px 8px 0',
                 }}
             >
                 <FontAwesomeIcon icon={faArrowLeft} size={'lg'} />
             </div>
-            <h3 style={{ marginLeft: '16px' }}>{props.conversation.name}</h3>
+            <h3 style={{ marginLeft: '8px' }}>{props.conversation.name}</h3>
         </header>
     )
 }
