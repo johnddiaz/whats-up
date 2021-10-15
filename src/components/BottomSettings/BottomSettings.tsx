@@ -11,12 +11,12 @@ interface Props {
 function BottomSettings(props: Props) {
     return (
         <div className={styles.root}>
-            <button
+            {/* <button
                 onClick={props.openUserSettings}
                 style={{ marginBottom: '8px' }}
             >
                 Edit User Settings
-            </button>
+            </button> */}
             <button onClick={props.logOut}>Log Out</button>
         </div>
     )

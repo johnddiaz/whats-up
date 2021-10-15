@@ -2,6 +2,7 @@ import * as React from 'react'
 import firebase from 'firebase'
 import Avatar from '../Avatar'
 import styles from './HomeHeader.module.scss'
+import Header from '../Header'
 
 interface Props {
     user: firebase.User | null
@@ -10,7 +11,7 @@ interface Props {
 
 export default function HomeHeader(props: Props) {
     return (
-        <header className={styles.root}>
+        <Header>
             {props.user?.photoURL && (
                 <Avatar
                     photoURL={props.user.photoURL}
@@ -27,6 +28,6 @@ export default function HomeHeader(props: Props) {
             >
                 Whats Up
             </h3>
-        </header>
+        </Header>
     )
 }

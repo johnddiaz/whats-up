@@ -22,6 +22,9 @@ import { useUsers } from './useUsers'
 import BottomSettings from '../BottomSettings'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import Header from '../Header'
+import { useConversationFormReducer } from './useConversationFormReducer'
 
 type ConversationIdDispatchValue<
     T extends LayoutStateActionType
@@ -61,7 +64,13 @@ function App(props: AppProps) {
     const windowSize = useWindowSize()
 
     const [currentDraft, setCurrentDraft] = React.useState('')
+
     const [layoutState, layoutStateDispatch] = useLayoutStateReducer()
+
+    const [
+        conversationFormState,
+        dispatchConversationForm,
+    ] = useConversationFormReducer()
 
     function handlePreviewSelect(id: string) {
         dispatchWithConversationId({
@@ -82,22 +91,34 @@ function App(props: AppProps) {
         setCurrentDraft(e.target.value)
     }
 
-    async function createConversation(friendId: string, name: string) {
+    async function createConversation() {
         if (!props.user) {
             console.error('not logged in')
+            return
+        } else if (
+            conversationFormState.peopleForNewConversation.length === 0
+        ) {
+            console.error('no friends to add')
             return
         }
 
         try {
             const db = firebase.database()
 
-            // Check if friendId is valid
-            const friendSnapshot = await db
-                .ref(`users/${friendId}`)
-                .once('value')
-            if (!friendSnapshot.val()) {
-                alert(`Friend ID ${friendId} does not exist.`)
-                return
+            // Check if friendIds are valid
+            const friendSnapshots = await Promise.all(
+                conversationFormState.peopleForNewConversation.map(
+                    (personId) => {
+                        return db.ref(`users/${personId}`).once('value')
+                    }
+                )
+            )
+
+            for (let snapshot of friendSnapshots) {
+                if (!snapshot.val()) {
+                    alert(`Friend ID ${snapshot.key} does not exist.`)
+                    return
+                }
             }
 
             // Create new conversation
@@ -107,7 +128,7 @@ function App(props: AppProps) {
             await conversationRef.set({
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
                 creatorId: props.user.uid,
-                name: name,
+                name: conversationFormState.newConversationName,
             })
 
             const everythingElse: Record<string, any> = {}
@@ -125,18 +146,20 @@ function App(props: AppProps) {
                 userName: props.user.displayName,
             }
 
-            // For friend
-            everythingElse[
-                `userConversations/${friendId}/${conversationId}`
-            ] = {
-                invitedBy: props.user.uid,
-            }
-            everythingElse[
-                `conversationUsers/${conversationId}/${friendId}`
-            ] = {
-                invitedBy: props.user.uid,
-                userName: friendSnapshot.child('userName').val() || '',
-            }
+            // For friends
+            friendSnapshots.forEach((snapshot) => {
+                everythingElse[
+                    `userConversations/${snapshot.key}/${conversationId}`
+                ] = {
+                    invitedBy: props.user?.uid,
+                }
+                everythingElse[
+                    `conversationUsers/${conversationId}/${snapshot.key}`
+                ] = {
+                    invitedBy: props.user?.uid,
+                    userName: snapshot.child('userName').val() || '',
+                }
+            })
 
             await db.ref().update(everythingElse)
 
@@ -241,6 +264,7 @@ function App(props: AppProps) {
                         }
                     />
                     <div
+                        onClick={openConversationForm}
                         className="hover"
                         style={{
                             margin: '16px 0',
@@ -252,7 +276,6 @@ function App(props: AppProps) {
                     >
                         New conversation
                         <div
-                            onClick={openConversationForm}
                             style={{
                                 display: 'flex',
                                 height: '32px',
@@ -321,12 +344,46 @@ function App(props: AppProps) {
                             />
                         </>
                     ) : layoutState.showConversationForm ? (
-                        <InteractionCreator
-                            createConversation={createConversation}
-                            back={
-                                windowSize === 'xs' ? returnToMain : undefined
-                            }
-                        />
+                        <>
+                            <Header>
+                                <div
+                                    onClick={returnToMain}
+                                    style={{
+                                        display: 'flex',
+                                        backgroundColor: 'black',
+                                        color: 'white',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                        padding: '8px 8px 8px 0',
+                                    }}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faArrowLeft}
+                                        size={'lg'}
+                                    />
+                                </div>
+                                <h3 style={{ marginLeft: '8px' }}>
+                                    New conversation
+                                </h3>
+                                <div
+                                    onClick={createConversation}
+                                    style={{
+                                        cursor: 'pointer',
+                                        padding: '8px 0 8px 8px',
+                                        marginLeft: 'auto',
+                                    }}
+                                >
+                                    Create
+                                </div>
+                            </Header>
+                            <InteractionCreator
+                                userId={props.user?.uid}
+                                users={users}
+                                userStatuses={userStatuses}
+                                formState={conversationFormState}
+                                dispatchForm={dispatchConversationForm}
+                            />
+                        </>
                     ) : layoutState.showUserSettings ? (
                         <UserSettings
                             displayName={props.user?.displayName || ''}
