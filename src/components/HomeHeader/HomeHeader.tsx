@@ -1,7 +1,7 @@
 import * as React from 'react'
 import firebase from 'firebase'
 import Avatar from '../Avatar'
-import styles from './HomeHeader.module.scss'
+// import styles from './HomeHeader.module.scss'
 import Header from '../Header'
 
 interface Props {

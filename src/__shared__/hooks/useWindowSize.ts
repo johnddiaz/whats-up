@@ -4,22 +4,28 @@ export type WindowSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 // Initially based on https://usehooks.com/useWindowSize/
 export function useWindowSize(): WindowSize | undefined {
-    const [windowSize, setWindowSize] = useState<WindowSize | undefined>()
+    const [windowSize, setWindowSize] = useState<WindowSize | undefined>(() => {
+        return calculateWindowSize(window.innerWidth)
+    })
+
+    function calculateWindowSize(windowWidth: number): WindowSize {
+        if (windowWidth >= 1920) {
+            return 'xl'
+        } else if (windowWidth >= 1280) {
+            return 'lg'
+        } else if (windowWidth >= 960) {
+            return 'md'
+        } else if (windowWidth >= 700) {
+            return 'sm'
+        } else {
+            return 'xs'
+        }
+    }
 
     useEffect(() => {
         function handleResize() {
             const width = window.innerWidth
-            if (width >= 1920) {
-                setWindowSize('xl')
-            } else if (width >= 1280) {
-                setWindowSize('lg')
-            } else if (width >= 960) {
-                setWindowSize('md')
-            } else if (width >= 700) {
-                setWindowSize('sm')
-            } else {
-                setWindowSize('xs')
-            }
+            setWindowSize(calculateWindowSize(width))
         }
 
         window.addEventListener('resize', handleResize)
