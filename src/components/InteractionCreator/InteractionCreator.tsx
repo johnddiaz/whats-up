@@ -27,9 +27,9 @@ export default function InteractionCreator(props: Props) {
 
     return (
         <div id="InteractionCreator-root">
-            <h5 style={{ marginTop: '0' }}>
+            <h4 style={{ marginTop: '0' }}>
                 Choose a conversation name (optional)
-            </h5>
+            </h4>
             <input
                 id="conversation-name-input"
                 type="text"
@@ -42,7 +42,7 @@ export default function InteractionCreator(props: Props) {
                 }
             ></input>
 
-            <h5>Select people to add *</h5>
+            <h4>Select people to add *</h4>
             <div>
                 {props.users
                     .filter((user) => user.id !== props.userId)
