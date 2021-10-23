@@ -2,14 +2,14 @@ import * as React from 'react'
 import { ClientUserStatus } from '../../__shared__/types/userStatus'
 import styles from './Avatar.module.scss'
 
-interface Props {
+export interface AvatarProps {
     photoURL: string
     size?: 'sm' | 'lg'
     badgeState?: ClientUserStatus['state'] | null
     style?: React.CSSProperties
 }
 
-export default function Avatar(props: Props) {
+export default function Avatar(props: AvatarProps) {
     const avatarDimensions =
         props.size === 'sm'
             ? {

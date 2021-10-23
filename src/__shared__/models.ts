@@ -2,7 +2,7 @@ export interface ServerMessage {
     content: string
     sender: string
     senderName: string
-    createdAt: string
+    createdAt: number
     photoURL?: string
 }
 

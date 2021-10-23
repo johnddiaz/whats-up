@@ -5,7 +5,7 @@ export interface ServerUserStatus {
 
 export interface ClientUserStatus {
     state: 'online' | 'offline'
-    lastChanged: string
+    lastChanged: number
 }
 
 export interface ClientUserStatuses {

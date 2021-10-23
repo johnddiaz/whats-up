@@ -1,13 +1,16 @@
 import * as React from 'react'
 import { ClientMessage } from '../../__shared__/models'
 import { ClientUserStatus } from '../../__shared__/types/userStatus'
+import Avatar, { AvatarProps } from '../Avatar'
 import './InteractionMessage.scss'
 
 export interface InteractionMessageProps {
     isSender: boolean
     userStatus: ClientUserStatus | undefined
     message: ClientMessage
-    avatar: JSX.Element | null
+    avatarProps?: AvatarProps
+    spacePlaceholder?: boolean
+    side?: 'left' | 'right'
     showName?: boolean
     squishAbove?: boolean
     squishBelow?: boolean
@@ -39,6 +42,8 @@ export default function InteractionMessage(props: InteractionMessageProps) {
         borderStyling[property] = '3px'
     }
 
+    console.log(props.message.createdAt)
+
     return (
         <div
             className={placementClass}
@@ -68,10 +73,15 @@ export default function InteractionMessage(props: InteractionMessageProps) {
             <div
                 style={{
                     display: 'flex',
-                    alignSelf: props.isSender ? 'flex-end' : 'flex-start',
+                    alignSelf:
+                        props.side === 'right'
+                            ? 'flex-end'
+                            : props.side === 'left'
+                            ? 'flex-start'
+                            : undefined,
                 }}
             >
-                {!props.isSender && (
+                {!props.isSender && props.avatarProps && (
                     <div
                         style={{
                             marginRight: '8px',
@@ -79,9 +89,20 @@ export default function InteractionMessage(props: InteractionMessageProps) {
                             width: '36px',
                         }}
                     >
-                        {props.avatar}
+                        <Avatar {...props.avatarProps} />
                     </div>
                 )}
+                {!props.isSender &&
+                    !props.avatarProps &&
+                    props.spacePlaceholder && (
+                        <div
+                            style={{
+                                marginRight: '8px',
+                                height: '36px',
+                                width: '36px',
+                            }}
+                        ></div>
+                    )}
                 <p
                     id="interactionmessage-text"
                     className={personClass}
@@ -95,7 +116,7 @@ export default function InteractionMessage(props: InteractionMessageProps) {
                 <p
                     style={{
                         marginTop: '4px',
-                        textAlign: props.isSender ? 'right' : 'left',
+                        textAlign: props.side,
                         ...(!props.isSender
                             ? { marginLeft: '56px' }
                             : { marginRight: '12px' }),

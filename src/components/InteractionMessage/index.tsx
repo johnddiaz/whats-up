@@ -1,7 +1,3 @@
-import InteractionMessage, {
-    InteractionMessageProps,
-} from './InteractionMessage'
+import InteractionMessage from './InteractionMessage'
 
 export default InteractionMessage
-
-export type { InteractionMessageProps }

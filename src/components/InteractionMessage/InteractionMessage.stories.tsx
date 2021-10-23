@@ -2,8 +2,9 @@ import * as React from 'react'
 
 import { Story, Meta } from '@storybook/react'
 
-import InteractionMessage, { InteractionMessageProps } from './index'
-import { john, squishy } from '../../__shared__/api-responses/conversations'
+import InteractionMessage, {
+    InteractionMessageProps,
+} from './InteractionMessage'
 
 export default {
     title: 'Components/InteractionMessage',
@@ -14,24 +15,37 @@ const Template: Story<InteractionMessageProps> = (args) => (
     <InteractionMessage {...args} />
 )
 
-export const Primary = Template.bind({})
-// Primary.args = {
-//     loggedInPerson: john,
-//     message: {
-//         id: john.id,
-//         senderId: john.id,
-//         senderName: john.name,
-//         text: 'This is a test message!',
-//     },
-// }
+export const SentMessage = Template.bind({})
+SentMessage.args = {
+    isSender: true,
+    userStatus: undefined,
+    message: {
+        content: 'Hey there!',
+        createdAt: 1633241030046,
+        id: 'g82s8f',
+        sender: '8bja2k',
+        senderName: 'John Johnson',
+    },
+}
 
-export const Secondary = Template.bind({})
-// Secondary.args = {
-//     loggedInPerson: john,
-//     message: {
-//         id: squishy.id,
-//         senderId: squishy.id,
-//         senderName: squishy.name,
-//         text: 'This is a test message!',
-//     },
-// }
+export const ReceivedMessage = Template.bind({})
+ReceivedMessage.args = {
+    isSender: false,
+    userStatus: {
+        lastChanged: 1633241030047,
+        state: 'online',
+    },
+    message: {
+        content: 'Long time no see.',
+        createdAt: 1633241030047,
+        id: 'b8ajws',
+        sender: 'q82mzan',
+        senderName: 'Billy Bilson',
+    },
+    showName: true,
+    avatarProps: {
+        photoURL:
+            'https://lh3.googleusercontent.com/a/AATXAJwusNLTwGYIC4ZWHziVqfYtv4ZznSOpEUL3XtX8=s96-c',
+        badgeState: 'online',
+    },
+}

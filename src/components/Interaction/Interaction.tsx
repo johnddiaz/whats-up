@@ -3,8 +3,8 @@ import './Interaction.scss'
 import InteractionMessage from '../InteractionMessage'
 import { ClientConversation, ClientMessage } from '../../__shared__/models'
 import { ClientUserStatuses } from '../../__shared__/types/userStatus'
-import Avatar from '../Avatar'
 import { convertToMillis, convertToSecs } from '../../__shared__/utils/dateTime'
+import { AvatarProps } from '../Avatar'
 
 interface MessageStyling {
     squishAbove: {
@@ -52,7 +52,7 @@ export default function Interaction(props: Props) {
         return props.messages.reduce(
             (previousStyling, currentMessage, index, arr) => {
                 const currentMessageSeconds = convertToSecs({
-                    millis: Number.parseInt(currentMessage.createdAt),
+                    millis: currentMessage.createdAt,
                 })
                 // Look behind - only when there is a previous message for same user
                 if (index > 0) {
@@ -61,7 +61,7 @@ export default function Interaction(props: Props) {
                         const secondsBetweenLastMessage =
                             currentMessageSeconds -
                             convertToSecs({
-                                millis: Number.parseInt(previousMessageTime),
+                                millis: previousMessageTime,
                             })
                         if (secondsBetweenLastMessage < 60) {
                             previousStyling.squishAbove[
@@ -85,7 +85,7 @@ export default function Interaction(props: Props) {
                     const nextMessageTime = arr[index + 1].createdAt
                     const secondsBetweenNextMessage =
                         convertToSecs({
-                            millis: Number.parseInt(nextMessageTime),
+                            millis: nextMessageTime,
                         }) - currentMessageSeconds
                     if (secondsBetweenNextMessage < 60) {
                         previousStyling.squishBelow[currentMessage.id] = true
@@ -175,6 +175,9 @@ export default function Interaction(props: Props) {
                 }
             }
 
+            const avatarAvailable: boolean =
+                !!message.photoURL && !styling.messagesWithoutAvatar[message.id]
+
             return (
                 <React.Fragment key={`rf-${message.id}`}>
                     {showTimelineAboveMessage && timelineDay && (
@@ -198,16 +201,16 @@ export default function Interaction(props: Props) {
                                 : undefined
                         }
                         isSender={isSender}
+                        side={isSender ? 'right' : 'left'}
                         userStatus={userStatus}
-                        avatar={
-                            !isSender &&
-                            message.photoURL &&
-                            !styling.messagesWithoutAvatar[message.id] ? (
-                                <Avatar
-                                    photoURL={message.photoURL}
-                                    badgeState={userStatus.state}
-                                />
-                            ) : null
+                        spacePlaceholder={!isSender && !avatarAvailable}
+                        avatarProps={
+                            !isSender && avatarAvailable
+                                ? ({
+                                      photoURL: message.photoURL,
+                                      badgeState: userStatus.state,
+                                  } as AvatarProps)
+                                : undefined
                         }
                         squishAbove={styling.squishAbove[message.id]}
                         squishBelow={styling.squishBelow[message.id]}
