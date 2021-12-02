@@ -7,6 +7,7 @@ interface Action {
     payload: string
 }
 
+// TODO make these names shorter
 interface State {
     newConversationName: string
     peopleForNewConversation: string[]

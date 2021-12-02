@@ -25,6 +25,9 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import Header from '../Header'
 import { useConversationFormReducer } from './useConversationFormReducer'
+import { createConversation } from '../../__shared__/models/conversations'
+import { createMessage } from '../../__shared__/models/messages'
+import { logOut } from '../../__shared__/auth/utils'
 
 type ConversationIdDispatchValue<
     T extends LayoutStateActionType
@@ -43,6 +46,12 @@ type DispatchWithConversationAction<T extends LayoutStateActionType> = {
 interface AppProps {
     user: firebase.User | null
 }
+
+/*
+What should be moved elsewhere?
+- Functions that interact with firebase (create conversation, create message, logout, update user profile)
+- 
+ */
 
 function App(props: AppProps) {
     const appInitiated = firebase.apps.length > 0
@@ -91,90 +100,29 @@ function App(props: AppProps) {
         setCurrentDraft(e.target.value)
     }
 
-    async function createConversation() {
-        if (!props.user) {
+    async function _createConversation() {
+        if (!props.user || !appInitiated) {
             console.error('not logged in')
-            return
-        } else if (
-            conversationFormState.peopleForNewConversation.length === 0
-        ) {
-            console.error('no friends to add')
             return
         }
 
-        try {
-            const db = firebase.database()
-
-            // Check if friendIds are valid
-            const friendSnapshots = await Promise.all(
-                conversationFormState.peopleForNewConversation.map(
-                    (personId) => {
-                        return db.ref(`users/${personId}`).once('value')
-                    }
-                )
-            )
-
-            for (let snapshot of friendSnapshots) {
-                if (!snapshot.val()) {
-                    alert(`Friend ID ${snapshot.key} does not exist.`)
-                    return
-                }
-            }
-
-            // Create new conversation
-            const conversationRef = await db.ref(`conversations`).push()
-            const conversationId = conversationRef.key
-
-            await conversationRef.set({
-                createdAt: firebase.database.ServerValue.TIMESTAMP,
-                creatorId: props.user.uid,
+        const conversationId = await createConversation(
+            // TODO remove this repetitiveness and simplify names
+            {
                 name: conversationFormState.newConversationName,
+                peopleToAdd: conversationFormState.peopleForNewConversation,
+            },
+            props.user
+        )
+        if (conversationId) {
+            dispatchWithConversationId({
+                type: 'select_conversation',
+                conversationId,
             })
-
-            const everythingElse: Record<string, any> = {}
-
-            // For self
-            everythingElse[
-                `userConversations/${props.user.uid}/${conversationId}`
-            ] = {
-                invitedBy: props.user.uid,
-            }
-            everythingElse[
-                `conversationUsers/${conversationId}/${props.user.uid}`
-            ] = {
-                invitedBy: props.user.uid,
-                userName: props.user.displayName,
-            }
-
-            // For friends
-            friendSnapshots.forEach((snapshot) => {
-                everythingElse[
-                    `userConversations/${snapshot.key}/${conversationId}`
-                ] = {
-                    invitedBy: props.user?.uid,
-                }
-                everythingElse[
-                    `conversationUsers/${conversationId}/${snapshot.key}`
-                ] = {
-                    invitedBy: props.user?.uid,
-                    userName: snapshot.child('userName').val() || '',
-                }
-            })
-
-            await db.ref().update(everythingElse)
-
-            if (conversationId) {
-                dispatchWithConversationId({
-                    type: 'select_conversation',
-                    conversationId,
-                })
-            }
-        } catch (outerError) {
-            alert(`something went wrong: ${outerError}`)
         }
     }
 
-    async function createMessage(
+    async function _createMessage(
         e: React.MouseEvent<HTMLInputElement, MouseEvent>
     ) {
         e.preventDefault()
@@ -182,36 +130,25 @@ function App(props: AppProps) {
         if (!props.user || !appInitiated) {
             console.error('not logged in')
             return
+        } else if (!conversationId) {
+            console.error('no conversation selected')
+            return
         }
 
-        const message = {
-            sender: props.user.uid,
-            senderName: props.user.displayName || '',
-            createdAt: firebase.database.ServerValue.TIMESTAMP,
-            content: currentDraft,
-            photoURL: props.user.photoURL,
+        try {
+            await createMessage(props.user, currentDraft, conversationId)
+            setCurrentDraft('')
+        } catch (e) {
+            alert(`something went wrong... ${e}`)
         }
-
-        const newMessageRef = await firebase
-            .database()
-            .ref(`messages/${conversationId}`)
-            .push()
-        newMessageRef.set(message, (error) => {
-            if (error) {
-                alert(`something went wrong... ${error}`)
-            } else {
-                setCurrentDraft('')
-            }
-        })
     }
 
-    function logOut() {
-        firebase
-            .auth()
-            .signOut()
-            .catch((e) => {
-                window.alert(`Unable to sign out with error ${e}`)
-            })
+    async function _logOut() {
+        try {
+            await logOut()
+        } catch (e) {
+            console.error(`unable to log out: ${e}`)
+        }
     }
 
     function openConversationForm(
@@ -315,7 +252,7 @@ function App(props: AppProps) {
                         </div>
                     </div>
                     <BottomSettings
-                        logOut={logOut}
+                        logOut={_logOut}
                         openUserSettings={openUserSettings}
                     />
                 </HomeLayout>
@@ -340,7 +277,7 @@ function App(props: AppProps) {
                                 // userId={props.user.uid}
                                 currentDraft={currentDraft}
                                 handleMessageChange={handleMessageChange}
-                                handleSend={createMessage}
+                                handleSend={_createMessage}
                             />
                         </>
                     ) : layoutState.showConversationForm ? (
@@ -366,7 +303,7 @@ function App(props: AppProps) {
                                     New conversation
                                 </h3>
                                 <div
-                                    onClick={createConversation}
+                                    onClick={_createConversation}
                                     style={{
                                         cursor: 'pointer',
                                         padding: '8px 0 8px 8px',
