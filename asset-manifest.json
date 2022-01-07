@@ -1,24 +1,24 @@
 {
   "files": {
     "main.css": "/whats-up/static/css/main.9b39c5c8.chunk.css",
-    "main.js": "/whats-up/static/js/main.f9b73c1c.chunk.js",
-    "main.js.map": "/whats-up/static/js/main.f9b73c1c.chunk.js.map",
+    "main.js": "/whats-up/static/js/main.ab232d29.chunk.js",
+    "main.js.map": "/whats-up/static/js/main.ab232d29.chunk.js.map",
     "runtime-main.js": "/whats-up/static/js/runtime-main.aab18b5d.js",
     "runtime-main.js.map": "/whats-up/static/js/runtime-main.aab18b5d.js.map",
-    "static/js/2.f7664e7e.chunk.js": "/whats-up/static/js/2.f7664e7e.chunk.js",
-    "static/js/2.f7664e7e.chunk.js.map": "/whats-up/static/js/2.f7664e7e.chunk.js.map",
+    "static/js/2.fd5ecf23.chunk.js": "/whats-up/static/js/2.fd5ecf23.chunk.js",
+    "static/js/2.fd5ecf23.chunk.js.map": "/whats-up/static/js/2.fd5ecf23.chunk.js.map",
     "static/js/3.b35431b1.chunk.js": "/whats-up/static/js/3.b35431b1.chunk.js",
     "static/js/3.b35431b1.chunk.js.map": "/whats-up/static/js/3.b35431b1.chunk.js.map",
     "index.html": "/whats-up/index.html",
     "service-worker.js": "/whats-up/service-worker.js",
     "service-worker.js.map": "/whats-up/service-worker.js.map",
     "static/css/main.9b39c5c8.chunk.css.map": "/whats-up/static/css/main.9b39c5c8.chunk.css.map",
-    "static/js/2.f7664e7e.chunk.js.LICENSE.txt": "/whats-up/static/js/2.f7664e7e.chunk.js.LICENSE.txt"
+    "static/js/2.fd5ecf23.chunk.js.LICENSE.txt": "/whats-up/static/js/2.fd5ecf23.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.aab18b5d.js",
-    "static/js/2.f7664e7e.chunk.js",
+    "static/js/2.fd5ecf23.chunk.js",
     "static/css/main.9b39c5c8.chunk.css",
-    "static/js/main.f9b73c1c.chunk.js"
+    "static/js/main.ab232d29.chunk.js"
   ]
 }
